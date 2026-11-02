@@ -93,7 +93,7 @@
 ## 快速开始
 
 ```bat
-git clone https://github.com/lufeihb1996/Minimax-Director-Console.git
+git clone https://github.com/lufeihb1996/MinimaxH3-Director-Console.git
 cd Minimax-Director-Console
 start.bat
 ```

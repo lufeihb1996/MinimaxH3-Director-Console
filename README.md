@@ -109,7 +109,7 @@ log. Right: shot parameters and the four reference slots.
 ## Quick start
 
 ```bat
-git clone https://github.com/lufeihb1996/Minimax-Director-Console.git
+git clone https://github.com/lufeihb1996/MinimaxH3-Director-Console.git
 cd Minimax-Director-Console
 start.bat
 ```
