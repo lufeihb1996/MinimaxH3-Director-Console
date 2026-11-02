@@ -1,86 +1,141 @@
 # AI Anime Studio
 
+<p align="center">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white">
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-0.115%2B-009688?logo=fastapi&logoColor=white">
+  <img alt="Platform" src="https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white">
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-3DA639">
+  <img alt="Inference" src="https://img.shields.io/badge/Inference-Remote%20ComfyUI-8B5CF6">
+</p>
+
+### Turn a song, a script or an interview into a finished short film.
+
+One local console for the whole AI video pipeline: **reference images → shots → queue → versions →
+final cut**. Your characters stay consistent, your GPU does the rendering, and every project file
+stays on your own disk.
+
+`MV` · `talking-head / interview` · `story & action shorts` · `reference-image studio`
+
+**Stack:** H3 b15-49 for video · MOSS-Image 5B / Krea 2 for stills · YuE2 for songs · Fish Audio
+Drama 3 for voice cloning · Demucs + WhisperX for alignment — all driven from one UI, all heavy
+lifting on a remote ComfyUI.
+
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-A Windows web console for producing AI anime and live-action short videos: projects, scenes,
-shots, reference images, songs and voice-over, driven from one browser UI.
+<p align="center">
+  <img src="assets/demo/mythic-clash.gif" alt="Mythic clash, generated with H3 b15-49" width="820">
+</p>
 
-**It does no inference locally.** Every image, video and audio job is executed by a remote
-ComfyUI instance (or a Pika API instance) that you point it at. This repository is the control
-plane — the local SQLite database, the queue, the media handling and the UI.
+## What you can make
+
+| | Production type | What the console does for it |
+|---|---|---|
+| 🎵 | **Music video / MV** | Generate the song with YuE2 or import your own audio, split vocals with Demucs, cut shots on the vocal troughs, drive lip-sync with the clean vocal, mux the original track back and burn in the lyric subtitles |
+| 🎙️ | **Talking-head / interview** | Clone a voice with Fish Audio Drama 3, align lines with Qwen3-ASR, auto-plan shots from the audio timeline, then lay it out in the 16:9 packaging workbench (Remotion cards) |
+| 🎬 | **Story / action short** | Lock characters and locations with four reference slots, keep motion continuous with CONTINUE shots, refine every take to 1080p or 2K |
+| 🖼️ | **Reference-image studio** | Generate photoreal or anime characters and empty sets with MOSS-Image 5B or Krea 2, keep a history per slot, share one character across every scene |
+
+## Models it drives
+
+| Stage | Model | Details |
+|---|---|---|
+| **Video** (default) | **H3 b15-49** INT8 · ComfyUI | Two-pass: 0.4 MP / 10 steps draft → 1080p (2.07 MP) → Open-H3 3-step refine (`start_sigma 0.78`). Modes T2V / CUT / CONTINUE. Supports MV original-audio lip-sync. |
+| **Video** (alt) | **Pika H3 Flex** · separate API | Official fixed 6 steps, 5–15 whole seconds, 480p / 768p, optional 2.0× upscale + BF16 3-step 1080p refine. No MV audio lock. |
+| **Images** (default) | **MOSS-Image 5B SFT** INT8 + Qwen3.5-9B + FLUX.2 VAE | 35 steps, CFG 2.8, SkipLayerGuidance 22 |
+| **Images** (alt) | **Krea 2 Turbo** | 4-step |
+| **Songs** | **YuE2 3B** INT8 | Staged plan → render-plan nodes, style + lyrics |
+| **Voice-over** | **Fish Audio Drama 3** 35B MoE + Qwen3-ASR + ForcedAligner | Zero-shot cloning, up to 16 speakers, inline emotion tags |
+| **Audio analysis** | **Demucs** + **WhisperX** | Vocal/BGM split, word-level lyric alignment, beat and pause detection |
+| **Merge** | FFmpeg | Seam smoothing on CONTINUE joins, original track muxed back, SRT burn-in for MV |
+
+## The pipeline
 
 ```
-browser (vanilla JS)  →  FastAPI backend (this repo)  →  ComfyUI / Pika  →  GPU
-                              │
-                              ├── data/studio.db          project, scene, shot, queue state
-                              └── projects/project_NNN/   images, videos, audio, inputs
+1 Project ─ 2 Scene ─ 3 Reference images ─ 4 Audio ─ 5 Shots ─ 6 Generate ─ 7 Versions ─ 8 Merge
 ```
 
-## Documentation
-
-| Document | 中文 |
+| Step | What happens |
 |---|---|
-| [Quick start](docs/QUICKSTART.md) — first project in ~15 minutes | [快速开始](docs/QUICKSTART.zh-CN.md) |
-| [Workflow](docs/WORKFLOW.md) — every stage from an empty project to a finished cut | [制作流程](docs/WORKFLOW.zh-CN.md) |
-| [Project rules](AI_QUICK_CONTEXT.md) — architecture, model capabilities, API index (Chinese) | — |
+| 1–2 | A project groups scenes; a scene groups shots and owns its reference slots |
+| 3 | Ref1/Ref2 characters, Ref3/Ref4 sets — generate or upload, keep history, optionally share across the whole project |
+| 4 | YuE2 song or your own track → Demucs split, lyric alignment, timeline + SRT |
+| 5 | Manual shots, or auto-plan from the analyzed timeline with a dry-run preview |
+| 6 | Queue single shot / whole scene / whole project; inputs freeze on enqueue; GPU work is serialized |
+| 7 | Every run becomes `v1, v2, …`; a failed re-run keeps the previous good take |
+| 8 | Per-scene or full-project merge, seam handling, audio mux, subtitles |
 
-## Features
+## Why it is not just a prompt box
 
-- **Projects → Scenes → Shots** with ordering, freeze-on-enqueue inputs and per-shot versions
-- **Reference images**: four slots per scene (Ref1/Ref2 characters, Ref3/Ref4 scenes) with a
-  history gallery and scope control (per scene or shared across the project)
-- **Video modes**: T2V (text), CUT (reference images) and CONTINUE (continue from the previous
-  shot's last frame)
-- **Two-pass video**: 0.4 MP draft first, then an Open-H3 refine pass to 1080p / 1.5K / 2K
-- **Image workbench**: MOSS-Image 5B and Krea 2, queued separately from video
-- **Audio**: YuE2 song generation, Fish Audio Drama 3 voice-over with per-speaker voice profiles
-- **Shot planning from audio**: align the vocal track, cut shots on silence troughs, bind each
-  shot to a timeline range
-- **Merge**: per-scene and full-project merge, original audio muxed back, MV lyric subtitles
-- Live progress over WebSocket, per-shot terminal log, GPU slot serialization
+- **Four reference slots with scope control** — Ref1/Ref2 can be shared project-wide, so one
+  character image feeds every scene and is generated once.
+- **Frozen inputs** — parameters, workflow and assets are snapshotted per job; editing a queued
+  shot never corrupts the running render.
+- **Version safety** — regenerating never deletes the last successful video.
+- **Seams and audio** — CONTINUE joins are smoothed, the original track is muxed back, MV lyrics
+  are burned in automatically.
+- **Remote-safe** — the app never guesses remote capabilities; unsupported combinations are
+  rejected before queueing instead of silently degrading.
+- **Local-first** — SQLite plus a plain `projects/` folder. Nothing leaves your machine except the
+  requests to the endpoint you configure.
+
+## Showcase
+
+| Forest titan | Reference images (MOSS-Image 5B) |
+|---|---|
+| <img src="assets/demo/forest-titan.gif" alt="Forest titan" width="420"> | <img src="assets/demo/gallery/interview-subject-a.jpg" alt="Character reference" width="250"> <img src="assets/demo/gallery/studio-empty-set.jpg" alt="Empty set reference" width="250"> |
+
+| Shot | Quality | Source |
+|---|---|---|
+| Mythic clash | [▶ full-quality MP4](assets/demo/mythic-clash.mp4) | H3 b15-49 · T2V · 5 s · 1728×960 · 24 fps |
+| Forest titan | [▶ full-quality MP4](assets/demo/forest-titan.mp4) | H3 b15-49 · T2V · 5 s · 1728×960 · 24 fps |
+
+More reference images: [character A](assets/demo/gallery/interview-subject-a.jpg) ·
+[character B](assets/demo/gallery/interview-subject-b.jpg) ·
+[empty set](assets/demo/gallery/studio-empty-set.jpg)
+
+## The console
+
+<p align="center">
+  <img src="assets/demo/ui-video-director.jpg" alt="Video director: shot list, live progress, reference slots" width="880">
+</p>
+
+Left: projects → scenes → shots. Center: the selected shot, its preview, live progress and terminal
+log. Right: shot parameters and the four reference slots.
+
+## Quick start
+
+```bat
+git clone https://github.com/lufeihb1996/Minimax-Director-Console.git
+cd Minimax-Director-Console
+start.bat
+```
+
+`start.bat` creates `.venv`, installs six packages, checks FFmpeg, opens
+<http://127.0.0.1:18081> and starts the backend. Then open **Settings** and paste your ComfyUI URL
+into `comfy_url`.
+
+The console runs without a GPU host, but nothing can be rendered until you point it at one. See
+[`colab/`](colab/README.md) for three one-cell Colab launchers (A100 40 GB+ for video + images,
+L4 24 GB for songs) — they read `CF_TUNNEL_TOKEN` and `PUBLIC_URL` from the environment, nothing is
+hard-coded.
 
 ## Requirements
 
 | | |
 |---|---|
-| OS | Windows 10/11 (the launcher and path handling assume Windows) |
-| Python | 3.11 or newer (`start.bat` calls `py -3`) |
-| FFmpeg | `ffmpeg.exe` **and** `ffprobe.exe` on `PATH` |
-| Disk | ~150 MB for the app and its virtualenv; models live on the GPU host |
-| Remote | A ComfyUI instance you can reach over HTTP(S) |
+| OS | Windows 10/11 |
+| Python | 3.11+ (`start.bat` uses `py -3`) |
+| FFmpeg | `ffmpeg.exe` and `ffprobe.exe` on `PATH` |
+| GPU | Remote ComfyUI: A100 40 GB+ (video/images) or L4 24 GB (songs) |
+| Disk | ~150 MB for the app; models live on the GPU host |
 
-Python dependencies are small (6 packages, see `requirements.txt`).
-
-## Quick start
-
-```bat
-git clone <your-repo-url> ai-anime-studio
-cd ai-anime-studio
-start.bat
-```
-
-`start.bat` creates `.venv`, installs the dependencies, verifies FFmpeg/FFprobe, opens
-<http://127.0.0.1:18081> and starts uvicorn with `--reload`.
-
-Then:
-
-1. Open **Settings** (top right) and paste your ComfyUI URL into `comfy_url`.
-2. Create a project, add a Scene, add a Shot.
-3. Hit generate.
-
-Until `comfy_url` is set the UI loads, but every generation reports
-`{"online": false, "endpoint": ""}`.
-
-Manual start, if you prefer:
-
-```powershell
-.venv\Scripts\python.exe -m uvicorn backend.app:app --host 127.0.0.1 --port 18081 --reload
-```
+Optional audio analysis (songs, MV subtitles) needs a separate environment: see
+[audio analysis](#optional--audio-analysis-songs-mv-subtitles-auto-shot-planning) below.
 
 ## Step 2 — bring up the remote ComfyUI
 
-`colab/` contains three Colab notebooks (plain `.py`, run as a cell) that install ComfyUI, the
-custom nodes, `comfy-kitchen` and the model weights, then publish ComfyUI through a Cloudflare
+`colab/` contains three Colab notebooks (plain `.py`, run as a single cell) that install ComfyUI,
+the custom nodes, `comfy-kitchen` and the weights, then publish ComfyUI through a Cloudflare
 tunnel. Pick one:
 
 | Script | Includes | GPU |
@@ -90,8 +145,8 @@ tunnel. Pick one:
 | `colab/YuE2_纯歌曲.py` | YuE2 song generation only | L4 24 GB |
 
 They download **well over 100 GB** of weights from public Hugging Face repositories
-(`Kijai/MiniMax-H3_comfy`, `Comfy-Org/YuE2`, `fal/MiniMax-H3-Realism-People-LoRA`, …), so plan
-for a long first run and a Colab Pro+ plan.
+(`Kijai/MiniMax-H3_comfy`, `Comfy-Org/YuE2`, `fal/MiniMax-H3-Realism-People-LoRA`, …), so plan for
+a long first run and a Colab Pro+ plan.
 
 ### Credentials the scripts need
 
@@ -130,9 +185,9 @@ cd audio_analysis
 
 Total footprint with the venv is roughly **10–13 GB**.
 
-The backend finds this environment through `ANIME_STUDIO_ANALYSIS_HOME`; `start.bat` already
-points it at `%~dp0audio_analysis`. Without it the rest of the app still works, but song
-generation fails with *local audio analysis environment not found*.
+The backend finds this environment through `ANIME_STUDIO_ANALYSIS_HOME`; `start.bat` already points
+it at `%~dp0audio_analysis`. Without it the rest of the app still works, but song generation fails
+with *local audio analysis environment not found*.
 
 This step needs a CUDA GPU; it does not unload your remote ComfyUI models.
 
@@ -140,8 +195,8 @@ This step needs a CUDA GPU; it does not unload your remote ComfyUI models.
 
 `config/models.json` registers `pika_h3`, which talks to a separate Pika service
 (`/api/health`, `/api/uploads`, `/api/jobs`, `/media/{id}`). **That service is not part of this
-repository.** If you do not have it, leave `pika_url` empty and use the `b15_49` video model.
-The app reports `Pika: offline` and refuses to queue Pika jobs instead of failing silently.
+repository.** If you do not have it, leave `pika_url` empty and use the `b15_49` video model. The
+app reports `Pika: offline` and refuses to queue Pika jobs instead of failing silently.
 
 ## Data layout
 
@@ -151,8 +206,8 @@ The app reports `Pika: offline` and refuses to queue Pika jobs instead of failin
 | `projects/project_NNN/` | generated images, videos, audio, and `inputs/<id>/` snapshots |
 | `audio_analysis/` | isolated analysis runtime and model cache (optional) |
 
-`data/`, `projects/`, `.venv/`, `logs/` and the analysis caches are git-ignored. Nothing is
-uploaded anywhere except to the ComfyUI/Pika endpoint you configure.
+`data/`, `projects/`, `.venv/`, `logs/` and the analysis caches are git-ignored. Nothing is uploaded
+anywhere except to the ComfyUI/Pika endpoint you configure.
 
 ## Configuration
 
@@ -179,13 +234,35 @@ workflow file and parameter ranges. Add an entry there plus an adapter in
 | Port 18081 already in use | `start.bat` reopens the existing instance instead of starting a second one |
 | Song analysis says the environment is missing | Run `audio_analysis/setup.ps1` (see above) |
 
+## Documentation
+
+| Document | 中文 |
+|---|---|
+| [Quick start](docs/QUICKSTART.md) — first project in ~15 minutes | [快速开始](docs/QUICKSTART.zh-CN.md) |
+| [Workflow](docs/WORKFLOW.md) — every stage from an empty project to a finished cut | [制作流程](docs/WORKFLOW.zh-CN.md) |
+| [Architecture & API index](AI_QUICK_CONTEXT.md) (Chinese) | — |
+
+## Features at a glance
+
+- Projects → Scenes → Shots with ordering, per-shot versions and frozen inputs
+- Four reference slots with scene/project scope, history gallery, uploads and paste
+- T2V, CUT and CONTINUE modes; automatic last-frame extraction for continuations
+- Two-pass video with 720p / 1K / 1.5K / 2K refine tiers
+- Image workbench with its own queue, model and LoRA selection
+- YuE2 songs, Drama 3 voice-over with a global voice library
+- Auto shot planning from the analyzed audio timeline
+- Per-scene and full-project merge, lyric subtitles, screening room
+- Live progress over WebSocket, per-shot terminal log, GPU slot serialization
+
 ## Limitations
 
-- Windows-oriented: `start.bat`, FFmpeg discovery and path handling assume Windows semantics.
-- No local inference — a GPU host is mandatory for anything beyond UI and project management.
-- The Pika service code is not included (see above).
-- The UI is English; some backend status and error strings are still being translated.
+- Windows-oriented scripts and path handling.
+- No local inference; a GPU host is mandatory.
+- The Pika API service itself is not included — leave `pika_url` empty and use `b15_49` if you do
+  not have one.
+- Backend status/error strings are partially translated; the UI is English.
 
 ## License
 
-Not chosen yet. Add a `LICENSE` file before redistributing.
+[MIT](LICENSE). Model weights are downloaded from their public Hugging Face repositories and keep
+their own licenses.
