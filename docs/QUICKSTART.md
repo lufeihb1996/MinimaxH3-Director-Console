@@ -12,7 +12,7 @@ notebooks). If you do not, you can still finish steps 1–4 — generation will 
 start.bat
 ```
 
-The browser opens <http://127.0.0.1:18080>. Then open **Settings** (top right):
+The browser opens <http://127.0.0.1:18081>. Then open **Settings** (top right):
 
 | Field | Value |
 |---|---|

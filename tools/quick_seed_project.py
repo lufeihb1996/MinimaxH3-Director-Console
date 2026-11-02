@@ -14,7 +14,7 @@ import httpx
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-DEFAULT_BASE_URL = "http://127.0.0.1:18080"
+DEFAULT_BASE_URL = "http://127.0.0.1:18081"
 
 
 def seed_project(spec: dict[str, Any], base_url: str = DEFAULT_BASE_URL) -> dict[str, Any]:

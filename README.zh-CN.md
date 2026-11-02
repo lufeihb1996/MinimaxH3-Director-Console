@@ -53,7 +53,7 @@ cd ai-anime-studio
 start.bat
 ```
 
-`start.bat` 会自动建 `.venv`、装依赖、校验 FFmpeg/FFprobe、打开 <http://127.0.0.1:18080> 并带 `--reload` 启动 uvicorn。
+`start.bat` 会自动建 `.venv`、装依赖、校验 FFmpeg/FFprobe、打开 <http://127.0.0.1:18081> 并带 `--reload` 启动 uvicorn。
 
 然后：
 
@@ -66,7 +66,7 @@ start.bat
 手动启动：
 
 ```powershell
-.venv\Scripts\python.exe -m uvicorn backend.app:app --host 127.0.0.1 --port 18080 --reload
+.venv\Scripts\python.exe -m uvicorn backend.app:app --host 127.0.0.1 --port 18081 --reload
 ```
 
 ## 第二步 — 起远端 ComfyUI
@@ -152,7 +152,7 @@ cd audio_analysis
 | 状态是 `online: false`、`endpoint: ""` | `comfy_url` 为空，去设置里填 |
 | 有地址但显示离线 | 隧道或 Colab 运行时挂了 |
 | 在公司代理后面 `/api/status` 返回 500 | HTTP 客户端用 `trust_env=False` 创建，不吃系统代理变量；直接测隧道地址 |
-| 18080 端口被占 | `start.bat` 会直接打开已有实例，不再起第二个 |
+| 18081 端口被占 | `start.bat` 会直接打开已有实例，不再起第二个 |
 | 歌曲分析提示环境不存在 | 跑 `audio_analysis/setup.ps1`（见上） |
 
 ## 限制

@@ -60,7 +60,7 @@ start.bat
 ```
 
 `start.bat` creates `.venv`, installs the dependencies, verifies FFmpeg/FFprobe, opens
-<http://127.0.0.1:18080> and starts uvicorn with `--reload`.
+<http://127.0.0.1:18081> and starts uvicorn with `--reload`.
 
 Then:
 
@@ -74,7 +74,7 @@ Until `comfy_url` is set the UI loads, but every generation reports
 Manual start, if you prefer:
 
 ```powershell
-.venv\Scripts\python.exe -m uvicorn backend.app:app --host 127.0.0.1 --port 18080 --reload
+.venv\Scripts\python.exe -m uvicorn backend.app:app --host 127.0.0.1 --port 18081 --reload
 ```
 
 ## Step 2 — bring up the remote ComfyUI
@@ -176,7 +176,7 @@ workflow file and parameter ranges. Add an entry there plus an adapter in
 | Status shows `online: false`, `endpoint: ""` | `comfy_url` is empty — set it in Settings |
 | Status shows the endpoint but offline | The tunnel or Colab runtime is down |
 | `/api/status` returns 500 behind a corporate proxy | HTTP clients are created with `trust_env=False`, so system proxy variables are ignored; check the tunnel directly |
-| Port 18080 already in use | `start.bat` reopens the existing instance instead of starting a second one |
+| Port 18081 already in use | `start.bat` reopens the existing instance instead of starting a second one |
 | Song analysis says the environment is missing | Run `audio_analysis/setup.ps1` (see above) |
 
 ## Limitations

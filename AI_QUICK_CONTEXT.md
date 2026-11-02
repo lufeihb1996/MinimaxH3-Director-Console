@@ -4,7 +4,7 @@
 
 ## 运行环境
 
-- 根目录：`D:/ai/AI_Anime_Studio`。FastAPI 入口 `backend.app:app`，使用根目录 `.venv`，默认地址 `http://127.0.0.1:18080`；`start.bat` 启动时开启 `--reload`。
+- 根目录：`D:/ai/AI_Anime_Studio`。FastAPI 入口 `backend.app:app`，使用根目录 `.venv`，默认地址 `http://127.0.0.1:18081`；`start.bat` 启动时开启 `--reload`。
 - SQLite：`data/studio.db`。图片、音频、输入快照、各版本视频和成片在 `projects/project_NNN/`；数据库保存 Windows 本地路径。
 - ComfyUI 地址保存在 `comfy_url`；Pika 地址保存在独立的 `pika_url`。两项分别指向实际推理服务，不能因使用同一隧道域名就视为兼容接口。
 - ComfyUI 输出使用工作流中的 `anime_studio/{images,videos,music}` 前缀；原 Colab 环境映射至 Drive 的 `MyDrive/Singularity/`，再下载到本地。Pika 使用其独立服务的输出目录和下载接口。
@@ -104,7 +104,7 @@
 
 ## 常用接口
 
-请求体和完整接口以运行中 <http://127.0.0.1:18080/docs> 为准，下面只维护定位索引；接口存在不等于已获得执行授权。
+请求体和完整接口以运行中 <http://127.0.0.1:18081/docs> 为准，下面只维护定位索引；接口存在不等于已获得执行授权。
 
 | 方法与路径 | 用途 |
 |---|---|

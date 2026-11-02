@@ -4,9 +4,9 @@ cd /d %~dp0
 
 rem Keep the isolated audio runtime relative to this application.
 set "ANIME_STUDIO_ANALYSIS_HOME=%~dp0audio_analysis"
-powershell -NoProfile -Command "if (Get-NetTCPConnection -State Listen -LocalPort 18080 -ErrorAction SilentlyContinue) { exit 1 }"
+powershell -NoProfile -Command "if (Get-NetTCPConnection -State Listen -LocalPort 18081 -ErrorAction SilentlyContinue) { exit 1 }"
 if errorlevel 1 (
-  start "" http://127.0.0.1:18080
+  start "" http://127.0.0.1:18081
   exit /b 0
 )
 
@@ -34,8 +34,8 @@ if errorlevel 1 (
 )
 echo FFmpeg/FFprobe check passed.
 
-echo [3/3] Starting AI Anime Studio at http://127.0.0.1:18080
-start "" http://127.0.0.1:18080
-.venv\Scripts\python.exe -m uvicorn backend.app:app --host 127.0.0.1 --port 18080 --reload
+echo [3/3] Starting AI Anime Studio at http://127.0.0.1:18081
+start "" http://127.0.0.1:18081
+.venv\Scripts\python.exe -m uvicorn backend.app:app --host 127.0.0.1 --port 18081 --reload
 
 endlocal
