@@ -1,0 +1,66 @@
+{
+  "1": {
+    "class_type": "YuE2Options",
+    "inputs": {
+      "cot": "full",
+      "max_seconds": 180.0,
+      "keep_model_loaded": true,
+      "cfg_scale": 0.0,
+      "vae": "standard",
+      "device": "auto",
+      "attention_backend": "fast",
+      "download": "auto",
+      "quantization": "int8",
+      "ode_steps": 32,
+      "abc_temperature": 0.7,
+      "abc_top_p": 0.9,
+      "abc_top_k": 30,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "top_k": 100,
+      "repetition_penalty": 1.2,
+      "offload": "off",
+      "transpose": 0,
+      "vocals_only": false,
+      "low_vram": false
+    },
+    "_meta": {"title": "YuE2 Options / L4 优化设置"}
+  },
+  "2": {
+    "class_type": "PrimitiveStringMultiline",
+    "inputs": {"value": "English, warm piano pop, expressive voice, 88 BPM"},
+    "_meta": {"title": "STYLE / 曲风"}
+  },
+  "3": {
+    "class_type": "PrimitiveStringMultiline",
+    "inputs": {"value": "[Verse]\nplaceholder lyrics"},
+    "_meta": {"title": "LYRICS / 歌词"}
+  },
+  "4": {
+    "class_type": "YuE2Plan",
+    "inputs": {
+      "style": ["2", 0],
+      "lyrics": ["3", 0],
+      "seed": 42,
+      "options": ["1", 0]
+    },
+    "_meta": {"title": "YuE2 Plan / 写谱"}
+  },
+  "6": {
+    "class_type": "YuE2RenderPlan",
+    "inputs": {
+      "plan": ["4", 0],
+      "options": ["1", 0]
+    },
+    "_meta": {"title": "YuE2 Render Plan / 演唱 + 声学 + 解码"}
+  },
+  "7": {
+    "class_type": "SaveAudioMP3",
+    "inputs": {
+      "audio": ["6", 0],
+      "filename_prefix": "anime_studio/music/yue2_song",
+      "quality": "V0"
+    },
+    "_meta": {"title": "SaveAudioMP3 / 极速高音质 MP3"}
+  }
+}

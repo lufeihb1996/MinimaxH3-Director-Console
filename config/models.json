@@ -1,0 +1,174 @@
+{
+  "_note": "Unified model catalog. To add a model: add an entry under its kind and put an adapter in backend/models/adapters/ (the adapter field names it).",
+  "image": {
+    "default": "moss_image_5b",
+    "models": [
+      {
+        "id": "moss_image_5b",
+        "label": "MOSS-Image 5B SFT (SLG=22)",
+        "adapter": "moss_image",
+        "gpu_key": "image:moss_image_5b",
+        "workflow": "workflows/image/moss_image_5b_sft_api.json",
+        "output_prefix": "anime_studio/images/moss_scene",
+        "steps": 35,
+        "cfg": 2.8,
+        "negative_prompt": "plastic skin, waxy skin, airbrushed, beauty filter, smooth porcelain skin, CGI, 3D render, doll, overly symmetrical face, studio glamour retouching, artificial bokeh, worst quality, bad anatomy, extra limbs, fused body, folded body, duplicate person, multiple people, disembodied legs, mutated hands, extra fingers, watermark, jpeg artifact",
+        "aspect_ratios": {
+          "9:16": [
+            896,
+            1152
+          ],
+          "16:9": [
+            1344,
+            768
+          ],
+          "1:1": [
+            1024,
+            1024
+          ]
+        },
+        "lora_modes": [
+          "all",
+          "accelerated",
+          "style",
+          "none"
+        ],
+        "default_lora_mode": "none"
+      },
+      {
+        "id": "krea2",
+        "label": "Krea 2 Turbo",
+        "adapter": "krea2",
+        "gpu_key": "image:krea2",
+        "workflow": "workflows/image/krea2_4step_api.json",
+        "output_prefix": "anime_studio/images/krea_scene",
+        "aspect_ratios": {
+          "9:16": [
+            768,
+            1360
+          ],
+          "16:9": [
+            1280,
+            720
+          ],
+          "1:1": [
+            1024,
+            1024
+          ]
+        },
+        "lora_modes": [
+          "all",
+          "accelerated",
+          "style",
+          "none"
+        ],
+        "default_lora_mode": "all",
+        "cfg": 1.0
+      }
+    ]
+  },
+  "video": {
+    "default": "b15_49",
+    "models": [
+      {
+        "id": "b15_49",
+        "label": "H3 b15–49 · two-pass sampling",
+        "adapter": "b15_two_pass",
+        "pipeline": "two_pass",
+        "modes": [
+          "T2V",
+          "CUT",
+          "CONTINUE"
+        ],
+        "supports_audio_lock": true,
+        "gpu_key": "video:b15_49",
+        "output_node": "92",
+        "workflows": {
+          "T2V": [
+            "workflows/video/b15_49_t2v_api.json",
+            "workflows/video/b15_49_t2v_bindings.json"
+          ],
+          "CUT": [
+            "workflows/video/b15_49_cut_api.json",
+            "workflows/video/b15_49_cut_bindings.json"
+          ],
+          "CONTINUE": [
+            "workflows/video/b15_49_continue_api.json",
+            "workflows/video/b15_49_continue_bindings.json"
+          ]
+        },
+        "steps": [
+          10
+        ],
+        "default_steps": 10,
+        "fixed_megapixels": null,
+        "default_megapixels": 0.4,
+        "output_megapixels": 2.07,
+        "refine_steps": 3,
+        "refine_denoise": 0.78,
+        "style_disabled_steps": [],
+        "step_labels": {
+          "10": "Two-pass: 10 steps → upscale to 1080p → Open-H3 3-step refine"
+        },
+        "hints": {},
+        "default_aspect_ratio": "9:16"
+      },
+      {
+        "id": "pika_h3",
+        "label": "Pika H3 Flex · official 6 steps",
+        "adapter": "pika_official",
+        "execution_backend": "pika",
+        "pipeline": "official_api",
+        "modes": [
+          "T2V",
+          "CUT",
+          "CONTINUE"
+        ],
+        "supports_audio_lock": false,
+        "supports_second_pass": true,
+        "gpu_key": "pika:h3",
+        "output_node": "pika_video",
+        "request_template": "workflows/video/pika_h3_request.json",
+        "steps": [
+          6
+        ],
+        "default_steps": 6,
+        "fixed_megapixels": null,
+        "default_megapixels": 0.4,
+        "style_disabled_steps": [
+          6
+        ],
+        "step_labels": {
+          "6": "Official 6 steps (second pass: 2.0x upscale + full BF16 3-step 1080p refine)"
+        },
+        "hints": {
+          "6": "CUT with multiple references · CONTINUE from the first frame · 5–15 whole seconds. With second pass, an existing first-pass video gets a full BF16 3-step 1080p refine (reuses the full 216GB Pika model)."
+        },
+        "resolutions": [
+          {
+            "mp": 0.4,
+            "label": "480p"
+          },
+          {
+            "mp": 1.0,
+            "label": "768p"
+          }
+        ],
+        "default_aspect_ratio": "9:16"
+      }
+    ]
+  },
+  "audio": {
+    "default": "yue2",
+    "models": [
+      {
+        "id": "yue2",
+        "label": "YuE2",
+        "adapter": "yue2",
+        "gpu_key": "music:yue2",
+        "workflow": "workflows/audio/yue2_optimized_api.json",
+        "output_prefix": "anime_studio/music/yue2_project"
+      }
+    ]
+  }
+}

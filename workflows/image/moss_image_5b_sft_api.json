@@ -1,0 +1,144 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "moss_image_sft_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "1. 加载 MOSS-Image 5B SFT 满血主模型"
+    }
+  },
+  "5": {
+    "class_type": "SkipLayerGuidanceDiTSimple",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "double_layers": "",
+      "single_layers": "22",
+      "start_percent": 0.0,
+      "end_percent": 0.5
+    },
+    "_meta": {
+      "title": "1.5 官方防人体折叠/防崩坏核心节点 (SLG 跳过第 22 层)"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3.5_9b_int8_convrot.safetensors",
+      "type": "moss_image",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "2. 加载 Qwen3.5-9B 文本编码器 (type 必选 moss_image)"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    },
+    "_meta": {
+      "title": "3. 加载 FLUX.2 VAE 解码器"
+    }
+  },
+  "4": {
+    "class_type": "EmptyFlux2LatentImage",
+    "inputs": {
+      "width": 896,
+      "height": 1152,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "4. 画布尺寸 (人像/全身用竖屏 896x1152 防挤压折叠 | 横屏改 1344x768)"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "__PROMPT__"
+    },
+    "_meta": {
+      "title": "5. 正向提示词 (复杂人体动作推荐英文+中文双引号字，支持 4000 Tokens)"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "plastic skin, waxy skin, airbrushed, beauty filter, smooth porcelain skin, CGI, 3D render, doll, overly symmetrical face, studio glamour retouching, artificial bokeh, worst quality, bad anatomy, extra limbs, fused body, folded body, duplicate person, multiple people, disembodied legs, mutated hands, extra fingers, watermark, jpeg artifact"
+    },
+    "_meta": {
+      "title": "6. 反向提示词 (官方防人体畸变/反塑料磨皮护栏词，勿留空！)"
+    }
+  },
+  "8": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "4",
+        0
+      ],
+      "seed": 20261022,
+      "steps": 35,
+      "cfg": 2.8,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "7. KSampler 满血采样器 (35~50步 | 黄金CFG 4.5 | 范围 3.0~6.0)"
+    }
+  },
+  "9": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "8",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "8. FLUX.2 VAE 解码"
+    }
+  },
+  "10": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "9",
+        0
+      ],
+      "filename_prefix": "anime_studio/images/moss_scene"
+    },
+    "_meta": {
+      "title": "9. 保存生成图像"
+    }
+  }
+}

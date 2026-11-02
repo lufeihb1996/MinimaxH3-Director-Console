@@ -1,0 +1,31 @@
+{
+  "id": "host_alan",
+  "display_name": "阿岚",
+  "role": "主持人 / 采访人（固定人设）",
+  "status": "canonical",
+  "created_from": {
+    "project_id": 34,
+    "project_name": "杨幂 · 9:16 网红花字口播 (30秒)",
+    "scene_id": 87,
+    "scene_image_id": 278,
+    "generated_at": "2026-10-28"
+  },
+  "image": "host_ref1.png",
+  "image_size": "896x1152",
+  "image_model": "moss_image_5b",
+  "aspect_ratio": "9:16",
+  "seed": 20261035,
+  "steps": 35,
+  "cfg": 3.0,
+  "lora_mode": "none",
+  "wardrobe": "off-white chunky ribbed knit cardigan, casually unbuttoned, over a fitted dark charcoal cotton camisole",
+  "look": "26-year-old Chinese woman, expressive foxy eyes, slender oval face with slight natural asymmetry, long dark hair clipped loosely at the back with stray wisps across the temple, visible freckles, unretouched raw skin",
+  "voice_profile_id": 1,
+  "voice_name": "杨幂专访原声",
+  "prompt": "An unpolished, candid iPhone 16 Pro snapshot, vertical 9:16 eye-level medium waist-up shot, 24mm wide-angle lens, deep depth of field with the entire room in focus, no artificial bokeh, leave natural headroom above the head. A single solo 26-year-old Chinese woman with expressive foxy eyes, a slender oval face with slight natural facial asymmetry, and long dark hair clipped loosely at the back with stray wisps falling naturally across her temple. Unretouched raw skin with visible micro-pores across the cheeks, fine vellus facial hairs catching the light along the jawline, subtle natural under-eye shadows, natural skin oils with a soft matte sheen on the nose bridge, and realistic dry lip texture with zero beauty filter. She wears an off-white chunky ribbed knit cardigan casually unbuttoned over a fitted dark charcoal cotton camisole, showing crisp wool yarn weave, tiny fabric lint, and natural gravity folds. Caught mid-sentence in an unposed everyday moment while sitting at a lived-in wooden desk, her torso angled slightly to the side, her left forearm resting on the desk beside a black dynamic microphone on a metal boom arm while her right hand gestures casually at chest height, looking straight at the smartphone camera with a lively, slightly sassy expression and softly parted lips. Behind her, a wooden bookshelf stacked with paperbacks, a computer monitor displaying a dark interface, a ceramic mug, and a coiled USB cable on the desk are all clearly visible in focus. Illuminated by ordinary overhead room lighting mixed with a warm desk lamp, subtle smartphone CMOS sensor grain, raw documentary realism, no text, no watermark.",
+  "notes": [
+    "对外画面里固定用这张脸、这套衣服，不随项目换装。",
+    "同一张图复用（上传）比按 seed 重生成更稳；重生成必然有漂移。",
+    "改衣服/改发型就等于是换人设，必须新建 persona 目录，不要覆盖这个。"
+  ]
+}

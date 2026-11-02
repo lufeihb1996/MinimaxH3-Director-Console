@@ -1,0 +1,36 @@
+{
+  "fields": {
+    "prompt": {
+      "node": "1",
+      "input": "value"
+    },
+    "width": {
+      "node": "131",
+      "input": "width"
+    },
+    "height": {
+      "node": "131",
+      "input": "height"
+    },
+    "length": {
+      "node": "131",
+      "input": "length"
+    },
+    "megapixels": null,
+    "aspect_ratio": null,
+    "seconds": null,
+    "steps": {
+      "node": "124",
+      "input": "steps"
+    },
+    "seed": {
+      "node": "129",
+      "input": "noise_seed"
+    },
+    "ref1": null,
+    "ref2": null,
+    "ref3": null,
+    "ref4": null,
+    "first_frame": null
+  }
+}

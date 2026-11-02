@@ -1,0 +1,9 @@
+whisperx==3.7.4
+demucs==4.0.1
+transformers==4.57.6
+pyannote.audio==3.3.2
+huggingface-hub<1
+hf-xet
+httpx
+setuptools<81
+librosa==0.11.0

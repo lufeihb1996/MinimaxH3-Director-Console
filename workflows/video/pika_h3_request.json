@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "backend": "pika",
+  "tasks": {"CUT": "ref2va", "CONTINUE": "i2va", "T2V": "t2va"},
+  "resolutions": {"0.4": "480p", "1.0": "768p"}
+}

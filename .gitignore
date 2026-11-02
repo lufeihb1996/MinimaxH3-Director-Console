@@ -1,0 +1,33 @@
+# Python runtime
+.venv/
+audio_analysis/.venv/
+__pycache__/
+*.py[cod]
+
+# Local application state (never commit user/runtime data)
+data/
+projects/
+backups/
+/studio.db
+
+# Local/system artifacts
+NUL
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Audio analysis: keep the setup scripts, ignore the runtime and model caches
+audio_analysis/cache/
+audio_analysis/python/
+audio_analysis/tmp/
+audio_analysis/results/
+audio_analysis/seed_vc/
+audio_analysis/*.ok
+audio_analysis/whisper_model_path.txt
+audio_analysis/export_object_info.json
+audio_analysis/normalize_diagnostic*.mp4
+
+# Editor / OS
+.idea/
+.vscode/

@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Anime Studio · Video director</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=20260914-1" />
+  <link rel="alternate icon" type="image/png" href="/static/favicon.png?v=20260914-1" />
+  <link rel="shortcut icon" href="/static/favicon.ico?v=20260914-1" />
+  <link rel="stylesheet" href="/static/styles.css?v=20261029-koubo-v71" />
+  <link rel="stylesheet" href="/static/layout.css?v=20261029-koubo-v71" />
+</head>
+<body>
+  <!-- Top Navigation & Live Telemetry -->
+  <header class="topbar">
+    <div class="brand-wrap">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+          <line x1="7" y1="2" x2="7" y2="22"></line>
+          <line x1="17" y1="2" x2="17" y2="22"></line>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <line x1="2" y1="7" x2="7" y2="7"></line>
+          <line x1="2" y1="17" x2="7" y2="17"></line>
+          <line x1="17" y1="17" x2="22" y2="17"></line>
+          <line x1="17" y1="7" x2="22" y2="7"></line>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">AI Anime Studio <span class="badge-tag">MiniMax-H3</span></div>
+        <div class="brand-sub">Windows director console · shot-to-shot continuous workflow</div>
+      </div>
+    </div>
+
+    <div class="workspace-switcher" aria-label="Workbench switch">
+      <button id="videoWorkspaceBtn" class="workspace-switch-btn active">🎬 Video director</button>
+      <button id="imageWorkspaceBtn" class="workspace-switch-btn">🖼 Image workbench</button>
+      <button id="mvWorkspaceBtn" class="workspace-switch-btn">🎵 Audio workbench</button>
+      <button id="dramaWorkspaceBtn" class="workspace-switch-btn">🎙️ Voice-over workbench</button>
+    </div>
+
+    <div class="top-center-stats">
+      <div class="health-pill" id="healthPill" title="Click for details">
+        <span id="cloudDot" class="status-pulse offline"></span>
+        <span id="cloudText" class="health-label">Colab not detected</span>
+        <span id="gpuText" class="gpu-badge" style="display:none !important"></span>
+      </div>
+
+      <div class="queue-pill">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span id="queueText">Queue idle</span>
+        <div class="mini-bar-track">
+          <div id="queueProgress" class="mini-bar-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <button id="refreshStatusBtn" class="btn btn-ghost" title="Re-check ComfyUI and Pika connections">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+        <span>Refresh</span>
+      </button>
+
+      <button id="settingsBtn" class="btn btn-ghost" title="Set the ComfyUI and Pika service addresses">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <dialog id="projectPickerDialog" class="project-picker-dialog" aria-labelledby="projectPickerTitle">
+    <div class="project-picker-head"><h2 id="projectPickerTitle">Switch project</h2><form method="dialog"><button class="icon-btn" aria-label="Close project list">✕</button></form></div>
+    <input id="projectSearch" class="form-input project-search" type="search" placeholder="Search project name" aria-label="Search projects" autocomplete="off" />
+    <div id="projectList" class="nav-stack" aria-label="Project list"></div>
+  </dialog>
+  <!-- Workspace Grid Layout -->
+  <main class="studio-layout">
+    <!-- Left Navigation: Projects & Scenes -->
+    <aside class="sidebar-panel">
+      <!-- Projects Section -->
+      <div class="panel-box projects-panel">
+        <div class="panel-head">
+          <div class="head-title">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Project <small id="projectCount" class="project-count"></small></span>
+          </div>
+          <button id="addProjectBtn" class="icon-btn btn-xs" title="New project">＋</button>
+        </div>
+        <button id="openProjectPicker" class="project-switcher" type="button" aria-haspopup="dialog" aria-controls="projectPickerDialog">
+          <span class="project-item-content"><span id="activeProjectName">Select project</span><span id="activeProjectNumber" class="project-item-meta"></span></span>
+          <span class="project-switch-action">Switch ▾</span>
+        </button>
+      </div>
+
+      <!-- Scenes Section -->
+      <div class="panel-box flex-grow">
+        <div class="panel-head">
+          <div class="head-title">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="23 7 16 12 23 17 23 7"></polygon>
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+            </svg>
+            <span>Scene</span>
+          </div>
+          <div class="panel-head-actions">
+
+            <button id="addSceneBtn" class="icon-btn btn-xs" title="New Scene">＋</button>
+          </div>
+        </div>
+        <div id="sceneList" class="nav-stack"></div>
+      </div>
+    </aside>
+
+    <!-- Center Workspace: Storyboard & Timeline -->
+    <section class="main-workspace">
+      <!-- MV Workbench -->
+      <div id="mvWorkbench" class="image-workbench mv-workbench hidden">
+        <div class="scene-header">
+          <div class="scene-header-top">
+            <div class="scene-title-group">
+              <div class="scene-icon-wrap">🎵</div>
+              <h2 id="mvTitle">Audio workbench</h2>
+              <div id="mvSummary" class="scene-stat-pill">YuE2 · full song from style + lyrics</div>
+            </div>
+          </div>
+          <div class="scene-header-bottom mv-toolbar-row">
+            <div class="mv-toolbar-actions">
+              <div class="mv-stage-action">
+                <button id="mvGenerateBtn" class="btn btn-primary btn-sm">🎵 Generate song</button>
+              </div>
+              <div class="mv-stage-action">
+                <button id="mvAnalyzeBtn" class="btn btn-secondary btn-sm">Analyze song</button>
+                <div id="mvAnalyzeProgress" class="mv-stage-progress hidden" role="progressbar" aria-label="Song analysis progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <div class="mini-bar-track"><div id="mvAnalyzeStageBar" class="mini-bar-fill" style="width:0%"></div></div>
+                  <span id="mvAnalyzeStagePct" class="font-mono">0%</span>
+                </div>
+                <div id="mvAnalyzeStageText" class="mv-analysis-stage-text hidden" aria-live="polite"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="mvAudioSourceNotice" class="mv-audio-source-notice hidden"></div>
+
+        <div class="mv-table-scroll-wrap">
+          <div class="mv-audio-table-head" aria-hidden="true">
+            <span>Tasks</span>
+            <span>song</span>
+            <span>Status</span>
+            <span>Progress</span>
+            <span title="Excludes queue wait, includes download">Elapsed</span>
+            <span>Actions</span>
+          </div>
+          <div id="mvAudioList" class="view-container mv-audio-task-list"></div>
+        </div>
+      </div>
+
+      <!-- Drama 3 Voice Workbench (Independent Module) -->
+      <div id="dramaWorkbench" class="image-workbench mv-workbench hidden">
+        <div class="scene-header image-workbench-header-bar">
+          <div class="scene-header-top">
+            <div class="scene-title-group">
+              <div class="scene-icon-wrap">🎙️</div>
+              <h2 id="dramaHeaderTitle">Voice-over workbench</h2>
+              <div id="dramaSummary" class="scene-stat-pill">Fish Audio Drama 3 · single-speaker voice cloning and emotional voice-over</div>
+            </div>
+          </div>
+          <div class="scene-header-bottom image-queue-toolbar-row">
+            <div class="image-queue-list-label">
+              <span>Task list</span>
+              <small id="dramaQueueSummary">0 in progress · 0 tasks</small>
+            </div>
+            <div class="toolbar-actions">
+              <button id="dramaAddTaskBtn" class="btn btn-secondary btn-sm" title="Add a new voice-over task and edit its parameters and lines on the right">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Add to queue</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mv-table-scroll-wrap">
+          <div class="mv-audio-table-head drama-audio-table-head" aria-hidden="true">
+            <span>Tasks</span>
+            <span>Voice-over lines</span>
+            <span>Status</span>
+            <span>Progress</span>
+            <span title="Excludes queue wait, includes download">Elapsed</span>
+            <span>Actions</span>
+          </div>
+          <div id="dramaAudioList" class="view-container mv-audio-task-list drama-audio-task-list"></div>
+        </div>
+      </div>
+
+      <!-- Scene Image Workbench: pure generation queue -->
+      <div id="imageWorkbench" class="image-workbench hidden">
+        <!-- Scene Header & Two-Tier Toolbar (Mirrors Video Scene Header) -->
+        <div class="scene-header image-workbench-header-bar">
+          <div class="scene-header-top">
+            <div class="scene-title-group">
+              <div class="scene-icon-wrap image-icon-wrap">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+              </div>
+              <h2 id="imageSceneTitle">Image task queue</h2>
+            </div>
+
+            <!-- Header Queue Telemetry & Quick Controls -->
+            <div class="image-header-actions">
+              <button id="generateWholeStoryImagesBtn" class="btn btn-secondary btn-sm" title="Queue every enabled image config from the selected script">Full-project images</button>
+            </div>
+          </div>
+
+          <div class="scene-header-bottom image-queue-toolbar-row">
+            <div class="image-queue-list-label">
+              <span>Task list</span>
+              <small id="imageSceneSummary">0 in progress · 0 tasks</small>
+            </div>
+
+            <div class="toolbar-actions">
+              <button id="imageAddRefBtn" class="btn btn-secondary btn-sm" title="Pick a Scene / Ref on the right and configure a new image task">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>New image task</span>
+              </button>
+              <button id="queueProjectMissingImagesBtn" class="btn btn-primary btn-sm" title="Queue only the reference images configured for this Scene that have not been generated yet">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>Batch render this Scene</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="image-queue-table-head" aria-hidden="true">
+          <span>Tasks</span>
+          <span>Scene</span>
+          <span>Reference slot</span>
+          <span>Progress</span>
+          <span>Elapsed</span>
+          <span>Actions</span>
+        </div>
+
+        <!-- Middle: only the image generation queue -->
+        <div id="imageStoryboardView" class="view-container image-task-queue-list">
+          <!-- Injected via renderImageWorkbench() as queue rows -->
+        </div>
+      </div>
+
+      <!-- Scene Header & Compact Toolbar -->
+      <div id="videoSceneHeader" class="scene-header">
+        <!-- Top Row: Scene Title + Stats + Project Actions -->
+        <div class="scene-header-top">
+          <div class="scene-title-group">
+            <h2 id="sceneTitle">Select a Scene</h2>
+            <div id="sceneSummary" class="scene-stat-pill">0 Shots · est. 0.0 s</div>
+          </div>
+
+          <div class="scene-header-project-actions">
+            <button id="openTerminalLogBtn" class="btn btn-secondary btn-sm" title="View the live official CLI terminal log of the current task">🖥️ Terminal log</button>
+            <button id="generateWholeStoryVideosBtn" class="btn btn-primary btn-sm" title="Queue the unfinished shots of this project; video is not merged">Full-project generation</button>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <button id="mergeProjectBtn" class="btn btn-secondary btn-sm" title="Merge all Scenes of this project into one video, in order">Merge full project</button>
+              <div id="projectMergeProgress" hidden aria-live="polite">
+                <div style="height:4px;background:#293249;border-radius:4px;overflow:hidden"><div id="projectMergeProgressBar" role="progressbar" aria-label="Full-project merge progress" aria-valuemin="0" aria-valuemax="100" style="width:0%;height:100%;background:linear-gradient(90deg,#8b5cf6,#06b6d4);transition:width .3s"></div></div>
+                <div id="projectMergeProgressText" style="font-size:10.5px;line-height:1.3;margin-top:2px;color:#aab9ce;overflow-wrap:anywhere"></div>
+              </div>
+            </div>
+            <button id="playProjectMasterBtn" class="master-pill-btn project hidden" title="Screen the merged full-project video">
+              <span class="status-pulse online"></span>
+              <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Final cut</span>
+            </button>
+            <button id="openKouboPackBtn" class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#f59e0b,#ea580c);border-color:#f59e0b;color:#fff;white-space:nowrap" title="Open the 16:9 minimal talking-head packaging workbench (instant preview + edit cards online + one-click export)">
+              <span>✨ Packaging workbench</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Bottom Row: Compact Scene Toolbar Actions -->
+        <div class="scene-header-bottom">
+          <div class="toolbar-actions">
+            <label class="scene-second-pass-pill" for="sceneSecondPassCheck" title="Checked: every Shot in this Scene uses second pass (Open-H3 1080p refine). Unchecked: all run first pass only (0.4MP quick draft).">
+              <input id="sceneSecondPassCheck" type="checkbox" />
+              <span>Enable second pass (Open-H3 1080p)</span>
+            </label>
+            <button id="autoPlanShotsBtn" class="btn btn-secondary btn-sm" title="Plan and create shots automatically from the analyzed audio timeline and vocal troughs">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+              </svg>
+              <span>Auto shots from audio</span>
+            </button>
+            <button id="addShotBtn" class="btn btn-secondary btn-sm" title="New shot">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>New Shot</span>
+            </button>
+            <button id="generateSceneBtn" class="btn btn-primary btn-sm" title="Render all unfinished shots in this Scene">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>Render Scene batch</span>
+            </button>
+            <button id="mergeSceneBtn" class="btn btn-secondary btn-sm" title="Merge this Scene’s shots and play the latest output">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+              </svg>
+              <span>Play this Scene</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Shot Main Video Preview -->
+      <div id="mainVideoPanel" class="main-video-panel hidden">
+        <div class="main-video-stage">
+          <video id="mainShotVideo" controls controlsList="nodownload" playsinline></video>
+          <button id="mainVideoFloatingDownloadBtn" class="video-floating-download" type="button" title="Download and name automatically by current video type">↓ Download video</button>
+        </div>
+        <div class="main-video-info">
+          <div class="main-video-kicker">
+            <span class="video-status-dot"></span>
+            <span>Selected final cut</span>
+            <span id="mainVideoShotNo" class="shot-no-badge">#001</span>
+            <button id="mainVideoCloseBtn" class="main-video-close" title="Close the middle video preview">✕ Close</button>
+          </div>
+          <div id="mainVideoTitle" class="main-video-title">Shot</div>
+          <div id="mainVideoMeta" class="main-video-meta">5.0s · 0.4MP → 1080p · 16:9 · 10+3 steps</div>
+          <div class="main-video-actions">
+            <button id="mainVideoDownloadBtn" class="btn btn-secondary btn-sm">Download video</button>
+            <button id="mainVideoLastFrameBtn" class="btn btn-ghost btn-sm">View last frame</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terminal Log Panel (Ported from Pika_H3_Flex_Studio) -->
+      <div id="terminalLogPanel" class="terminal-log-panel hidden" style="margin:0 14px 10px;background:#070a10;border:1px solid rgba(139,92,246,0.38);border-radius:10px;overflow:hidden;max-height:320px;flex-shrink:0;box-shadow:0 10px 28px rgba(0,0,0,0.45)">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:#0f1623;border-bottom:1px solid rgba(255,255,255,0.08)">
+          <div style="display:flex;align-items:center;gap:8px;min-width:0">
+            <span>🖥️</span>
+            <strong style="font-size:12.5px;color:#e2e8f0;white-space:nowrap">Official CLI live terminal log</strong>
+            <span id="logJobIndicator" class="scene-stat-pill" style="font-size:11px">Selected task log</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+            <select id="terminalLogShotSelect" class="form-select" style="width:auto;min-width:130px;height:26px;padding:2px 8px;font-size:11.5px" title="Pick the shot whose log you want">
+              <option value="auto">⚡ Follows the running shot</option>
+            </select>
+            <button type="button" id="refreshFullLogBtn" class="btn btn-secondary btn-xs" title="Refresh log now">Refresh log ↻</button>
+            <button type="button" id="copyFullLogBtn" class="btn btn-ghost btn-xs" title="Copy the full terminal log">Copy</button>
+            <button type="button" id="closeTerminalLogBtn" class="btn btn-ghost btn-xs" title="Collapse the terminal log panel">✕ Close</button>
+          </div>
+        </div>
+        <pre id="full-logs" style="margin:0;padding:10px 14px;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--font-mono,monospace);font-size:11.5px;line-height:1.55;color:#93c5fd;overflow-y:auto;flex:1;min-height:160px;max-height:260px">No task log yet</pre>
+      </div>
+
+      <!-- Table View -->
+      <div id="tableView" class="view-container table-wrap">
+        <table class="shot-table">
+          <thead>
+            <tr>
+              <th width="70">Shot</th>
+              <th width="90">Mode</th>
+              <th width="140">Title</th>
+              <th width="140">Progress</th>
+              <th width="100" title="From start of preparation to end of generation, excluding queue wait">Elapsed</th>
+              <th width="150" style="text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="shotRows"></tbody>
+        </table>
+      </div>
+
+      <!-- Bottom Collapsible CLI Log Drawer (Ported from Pika_H3_Flex_Studio) -->
+      <details id="log-details" class="log-drawer" style="border-top:1px solid rgba(255,255,255,0.08);background:#0c121b;padding:8px 14px;flex-shrink:0">
+        <summary style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:600;color:#94a3b8">
+          <span>🖥️ View this shot’s CLI log</span>
+          <span style="font-size:11px;color:#64748b">Expand live output</span>
+        </summary>
+        <pre id="logs" style="margin-top:8px;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--font-mono,monospace);font-size:11px;line-height:1.55;color:#93c5fd;max-height:150px;overflow:auto;background:#070a10;border:1px solid rgba(255,255,255,0.08);padding:10px 12px;border-radius:8px">No tasks</pre>
+      </details>
+    </section>
+
+    <!-- Right Inspector: Shot Editor & Media Station -->
+    <aside class="editor-panel" id="editorPanel">
+      <div id="mvInspector" class="image-inspector hidden">
+        <div class="editor-header image-editor-header">
+          <div class="editor-shot-title"><span class="inspector-heading"><small>Audio settings</small><strong>Song editor</strong></span><span id="mvInspectorStatus" class="badge-status status-pending">Pending</span></div>
+          <div class="editor-top-actions">
+            <button id="mvSaveProjectBtn" class="btn btn-secondary">Save</button>
+            <button id="mvInspectorGenerateBtn" class="btn btn-primary">🎵 Generate song</button>
+          </div>
+        </div>
+        <div class="editor-section">
+          <div class="section-title">Song parameters</div>
+          <div class="form-group"><label class="form-label">Song title</label><input id="mvProjectTitle" class="form-input" /></div>
+          <div class="image-param-grid">
+            <div class="form-group"><label class="form-label">Generation model</label><select class="form-select" disabled><option>YuE2</option></select></div>
+            <div class="form-group"><label class="form-label">Target duration</label><input id="mvTargetDuration" type="number" min="10" max="360" step="10" class="form-input" value="60" /></div>
+          </div>
+          <div class="form-group"><label class="form-label">Song style</label><textarea id="mvGenrePrompt" class="form-textarea" rows="5" placeholder="e.g. 80s Cantopop, emotional male vocal, piano"></textarea></div>
+          <div class="form-group"><label class="form-label">Lyrics</label><textarea id="mvLyrics" class="form-textarea" rows="10" placeholder="Enter full lyrics"></textarea></div>
+        </div>
+        <div class="editor-section">
+          <div class="section-title">Project link</div>
+          <label class="image-batch-check">
+            <input id="mvAudioLinked" type="checkbox" />
+            <span>Used as the project’s final audio track</span>
+          </label>
+          <div class="label-hint">The final audio track is only swapped during "Merge full project"; individual shots are unchanged.</div>
+        </div>
+        <div class="editor-section">
+          <div class="section-title">Generation result</div>
+          <div id="mvAudioMeta" class="label-hint">No song yet</div>
+          <audio id="mvAudioPlayer" controls class="hidden" style="width:100%;margin-top:12px"></audio>
+        </div>
+        <div class="editor-section">
+          <div class="section-title">Song analysis and timeline</div>
+          <div id="mvAnalysisMeta" class="label-hint">Song not analyzed</div>
+          <div id="mvTimelineMeta" class="label-hint" style="margin-top:8px">0 time slots · 0 Shots bound</div>
+          <div class="toolbar-actions" style="justify-content:flex-start;margin-top:10px">
+            <button id="mvAnalyzeAgainBtn" class="btn btn-secondary btn-sm">Analyze song</button>
+            <a id="mvSrtDownload" class="btn btn-ghost btn-sm hidden" href="#" download="lyrics.srt">Download lyrics SRT</a>
+          </div>
+          <div class="label-hint" style="margin-top:8px">The song is the master timeline; after analysis, existing Project / Scene / Shot bind to song time ranges. The voice-over workbench no longer keeps a second Shot set.</div>
+        </div>
+      </div>
+
+      <!-- Drama 3 Right Inspector -->
+      <div id="dramaInspector" class="image-inspector hidden">
+        <div class="editor-header image-editor-header">
+          <div class="editor-shot-title">
+            <span class="inspector-heading"><small>Voice-over task settings</small><strong id="dramaInspectorTaskBadge">#001 · Single-speaker voice clone</strong></span>
+            <span id="dramaInspectorStatus" class="badge-status status-pending">Pending</span>
+          </div>
+          <div class="editor-top-actions">
+            <button id="dramaSaveBtn" class="btn btn-secondary">Save</button>
+            <button id="dramaInspectorGenerateBtn" class="btn btn-primary">🎙️ Generate voice-over</button>
+            <button id="dramaInspectorApplyBtn" class="btn btn-secondary" title="Use this voice-over as the project’s main audio">Apply</button>
+          </div>
+        </div>
+
+        <div class="editor-section">
+          <div class="section-title-row">
+            <div class="section-title">🔊 Preview the result</div>
+            <a id="dramaInspectorDownloadBtn" class="btn btn-ghost btn-xs hidden" href="#" download>Download audio</a>
+          </div>
+          <div id="dramaAudioMeta" class="label-hint">No voice-over selected or generated yet</div>
+          <audio id="dramaAudioPlayer" controls preload="metadata" class="hidden" style="width:100%;margin-top:8px"></audio>
+        </div>
+
+        <div class="editor-section">
+          <div class="section-title-row">
+            <div class="section-title">🎙️ Speakers and reference voices (1–16)</div>
+            <button id="dramaAddVoiceBtn" type="button" class="btn btn-secondary btn-xs" title="Add a new speaker slot (up to 16 speakers)">＋ Add speaker</button>
+          </div>
+          <div class="label-hint" style="margin-bottom:8px">Supports monologue or multi-speaker dialogue · uploads strip BGM and extract a dry vocal · without one, roles are synthesized without reference</div>
+          <div id="dramaVoiceCards" class="drama-voice-grid"></div>
+        </div>
+
+        <div class="editor-section">
+          <div class="section-title-row">
+            <div class="section-title">Dialogue script and emotion tags</div>
+            <select id="dramaPresetSelect" class="form-select" style="width:auto;min-width:210px;padding:3px 8px;font-size:12px">
+              <option value="">✨ Pick a preset single/multi-speaker script…</option>
+              <option value="duet_sweet">💑 Two-speaker dialogue · playful couple (2 people)</option>
+              <option value="duet_drama">⚡ Two-hander · rooftop standoff in the rain (2 people)</option>
+              <option value="trio_scene">🎬 Three-hander · holiday tea party (3 people)</option>
+              <option value="jp_duet">🇯🇵 Two-person anime · confession after school (Japanese, 2 people)</option>
+              <option value="solo_sweet">🌸 Monologue · girl-next-door (1 person)</option>
+              <option value="solo_cheerful">✨ Monologue · cheerful girl greeting (1 person)</option>
+              <option value="solo_rain">🌧️ Monologue · hurt and crying in the rain (1 person)</option>
+              <option value="jp_sweet">🇯🇵 Single anime · girlfriend whispering (Japanese, 1 person)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Voice-over task name</label>
+            <input id="dramaTitleInput" class="form-input" placeholder="e.g. girl-next-door · playful two-person dialogue" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Click to insert a paralanguage / emotion tag at the cursor</label>
+            <div id="dramaEmotionTagChips" class="drama-tag-chips">
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[sighs] ">[sighs] sigh</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[giggles] ">[giggles] giggle</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[laughs] ">[laughs] laugh</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[chuckles] ">[chuckles] chuckle</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[whispering] ">[whispering] whisper</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[panting] ">[panting] panting</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[crying] ">[crying] crying</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[gasps] ">[gasps] gasp</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[excited] ">[excited] excited</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[sad] ">[sad] sad</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[shy] ">[shy] shy</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[tender] ">[tender] tender</button>
+              <button type="button" class="btn btn-ghost btn-xs drama-chip" data-tag="[pause] ">[pause] pause</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Voice-over lines (single speaker: just write the lines; multiple speakers: prefix each line with &lt;|speaker:0|&gt; / &lt;|speaker:1|&gt;)</label>
+            <textarea id="dramaScriptText" class="form-textarea font-mono" rows="10" placeholder="<|speaker:0|> [sighs] Hey, you have been staring at that screen for two hours!&#10;<|speaker:1|> [chuckles] Sorry, sorry, almost done!"></textarea>
+          </div>
+        </div>
+
+        <div class="editor-section">
+          <div class="section-title">Model and sampling parameters (Colab L4 24GB preset)</div>
+          <div class="image-param-grid">
+            <div class="form-group">
+              <label class="form-label">Drama 3 model weights</label>
+              <select id="dramaModelName" class="form-select">
+                <option value="drama3_w6a8experts_bf16.safetensors">drama3_w6a8experts_bf16 (recommended · best quality)</option>
+                <option value="drama3_fp8_e4m3fn.safetensors">drama3_fp8_e4m3fn (FP8 light)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Multi-speaker dialogue mode (speakers)</label>
+              <select id="dramaSpeakersMode" class="form-select">
+                <option value="one take per line">Per-line generation (recommended · voices never bleed)</option>
+                <option value="one take per line, hearing the line before">Continue line by line (natural emotional flow)</option>
+                <option value="together">Full-project single-track generation (consistent multi-speaker performance)</option>
+                <option value="one take per speaker">Generate per role (consistent within a role)</option>
+              </select>
+            </div>
+          </div>
+          <div class="image-param-grid">
+            <div class="form-group">
+              <label class="form-label">MoE expert residency</label>
+              <select id="dramaExpertsMode" class="form-select">
+                <option value="in RAM">in RAM (L4 24GB recommended)</option>
+                <option value="in VRAM">in VRAM (needs ≥40GB)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Qwen3-ASR recognition language</label>
+              <select id="dramaAsrLanguage" class="form-select">
+                <option value="auto">auto · detect</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Japanese">Japanese</option>
+                <option value="English">English</option>
+                <option value="Cantonese">Cantonese</option>
+                <option value="Korean">Korean</option>
+              </select>
+            </div>
+          </div>
+          <div class="image-param-grid image-param-grid-4">
+            <div class="form-group">
+              <label class="form-label">Temperature</label>
+              <input id="dramaTemperature" type="number" step="0.05" min="0.1" max="2.0" class="form-input font-mono" value="1.0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Top-P</label>
+              <input id="dramaTopP" type="number" step="0.05" min="0.1" max="1.0" class="form-input font-mono" value="0.9" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Frames</label>
+              <input id="dramaMaxFrames" type="number" step="50" min="100" max="8192" class="form-input font-mono" value="800" />
+            </div>
+            <div class="form-group image-seed-group">
+              <div class="form-label-row">
+                <label class="form-label">Seed</label>
+                <div class="seed-actions">
+                  <button id="dramaSeedRandBtn" type="button" class="btn btn-ghost btn-xs">🎲</button>
+                  <button id="dramaSeed42Btn" type="button" class="btn btn-ghost btn-xs">42</button>
+                </div>
+              </div>
+              <input id="dramaSeed" type="number" class="form-input font-mono" value="42" />
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px">
+            <label class="image-batch-check">
+              <input id="dramaSplitLongText" type="checkbox" checked />
+              <span>Auto-split long lines (split_long_text)</span>
+            </label>
+            <label class="image-batch-check">
+              <input id="dramaShortenPauses" type="checkbox" checked />
+              <span>Auto-shorten long pauses (shorten_long_pauses)</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div id="imageInspector" class="image-inspector hidden">
+        <!-- Inspector Top Header (Matches Shot Editor Header) -->
+        <div class="editor-header image-editor-header">
+          <div class="editor-shot-title">
+            <span class="inspector-heading"><small>Reference image settings</small><strong id="imageInspectorRoleBadge">Ref1 Character 1</strong></span>
+            <span id="imageInspectorStatus" class="badge-status status-pending">Pending</span>
+          </div>
+          <div class="editor-top-actions">
+            <button id="saveImageConfigBtn" class="btn btn-secondary" title="Save this reference slot config">Save</button>
+          </div>
+        </div>
+
+        <!-- Reference image type: Scene is already fixed by the left navigation -->
+        <div class="editor-section image-type-section">
+          <div class="section-title">Reference image type</div>
+          <div class="image-role-tabs">
+            <button class="image-role-tab active" data-role="ref1">Ref1 Character 1</button>
+            <button class="image-role-tab" data-role="ref2">Ref2 Character 2</button>
+            <button class="image-role-tab" data-role="ref3">Ref3 Scene A</button>
+            <button class="image-role-tab" data-role="ref4">Ref4 Scene B</button>
+          </div>
+        </div>
+
+        <!-- Right Large Image Stage (Matches Video Stage Container) -->
+        <div class="image-stage-card">
+          <div class="image-stage-wrap">
+            <img id="imageStagePreview" class="image-stage-img hidden" alt="Large preview" />
+            <div id="imageStagePlaceholder" class="image-stage-placeholder">
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              <span class="placeholder-title">No reference image yet</span>
+              <span class="placeholder-sub">Type a prompt below and click Generate, or drag a local image in</span>
+              <input type="file" id="imageUploadInput" accept="image/*" class="file-input-overlay" />
+            </div>
+          </div>
+          <div id="imageStageToolbar" class="image-stage-toolbar hidden">
+            <div class="stage-info">
+              <span class="video-status-dot"></span>
+              <span id="imageStageMetaText">1024×1024 · Seed 42</span>
+            </div>
+            <div class="stage-actions">
+              <button id="imageStageZoomBtn" class="btn btn-ghost btn-sm" title="View full screen">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+                <span>Enlarge</span>
+              </button>
+              <button id="imageStageDownloadBtn" class="btn btn-ghost btn-sm" title="Download original">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Download</span>
+              </button>
+              <button id="imageStageUploadBtn" class="btn btn-ghost btn-sm" title="Replace with local upload">
+                <span>🔄 Replace</span>
+                <input type="file" id="imageStageReplaceInput" accept="image/*" class="file-input-overlay" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Generation Progress Bar (Matches Shot Live Progress) -->
+        <div id="imageGenerationLive" class="generation-live hidden">
+          <div class="generation-live-head">
+            <span id="imageGenerationLabel">Current image progress</span>
+            <span id="imageGenerationPct" class="font-mono">0%</span>
+          </div>
+          <div class="mini-bar-track generation-live-track">
+            <div id="imageGenerationBar" class="mini-bar-fill"></div>
+          </div>
+          <div id="imageGenerationNode" class="generation-live-node">Waiting in queue</div>
+        </div>
+
+        <!-- Parameters Section 1: Basic generation config -->
+        <div class="editor-section image-params-section">
+          <div class="section-title-row">
+            <div class="section-title">Generation parameters</div>
+            <span class="section-sub">Select the current image model</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Image model</label>
+            <select id="imageModel" class="form-select">
+              <option value="moss_image_5b">MOSS-Image 5B SFT (SLG=22)</option>
+            </select>
+          </div>
+          <div class="form-group" id="imageLoraGroup">
+            <label class="form-label" for="imageLoraMode">Image LoRA</label>
+            <select id="imageLoraMode" class="form-input">
+              <option value="none">All LoRA off · 8 steps</option>
+              <option value="accelerated">4-step turbo LoRA</option>
+              <option value="style">FameGrid Natural + PornMaster · 8 steps</option>
+              <option value="all" selected>All LoRA · 4-step turbo + FameGrid Natural + PornMaster (default)</option>
+            </select>
+          </div>
+          <div class="form-group" id="imageRefScopeGroup">
+            <label class="form-label">Asset scope</label>
+            <select id="imageRefScope" class="form-select">
+              <option value="scene">Assets local to this Scene</option>
+              <option value="project">Shared character in project · reuses the same image</option>
+            </select>
+            <small id="imageRefScopeHint" class="label-hint"></small>
+          </div>
+          <div class="image-param-grid image-param-grid-4">
+            <div class="form-group">
+              <label class="form-label">Aspect ratio</label>
+              <select id="imageRatio" class="form-select">
+                <option value="9:16">9:16 · portrait</option>
+                <option value="16:9">16:9 · landscape</option>
+                <option value="1:1">1:1 · square</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="imageSteps">Inference steps</label>
+              <input id="imageSteps" type="number" min="1" max="150" step="1" class="form-input font-mono" value="4" />
+            </div>
+            <div class="form-group" id="imageCfgGroup">
+              <label class="form-label" for="imageCfg">CFG strength</label>
+              <input id="imageCfg" type="number" min="0.5" max="20" step="0.1" class="form-input font-mono" value="4.5" />
+            </div>
+            <div class="form-group image-seed-group">
+              <div class="form-label-row">
+                <label class="form-label">Seed</label>
+                <div class="seed-actions">
+                  <button id="imageSeedRandBtn" class="btn btn-ghost btn-xs">🎲</button>
+                  <button id="imageSeed42Btn" class="btn btn-ghost btn-xs">42</button>
+                </div>
+              </div>
+              <input id="imageSeed" type="number" class="form-input font-mono" value="42" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Prompt editor -->
+        <div class="editor-section image-prompt-section">
+          <div class="section-title-row">
+            <div class="section-title">Prompt</div>
+            <span id="imageHistoryCount" class="label-hint">History: 0</span>
+          </div>
+          <div class="form-group">
+            <textarea id="imagePrompt" class="form-textarea" rows="7" placeholder="Describe what this reference image should show…"></textarea>
+          </div>
+          <div class="image-prompt-actions">
+            <button id="queueCurrentRefBtn" class="btn btn-primary" title="Generate this reference image">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>Generate</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Parameters Section 4: History Gallery -->
+        <div class="editor-section image-history-section">
+          <div class="section-title-row">
+            <div class="section-title">History images</div>
+            <span class="section-sub">Click to preview</span>
+          </div>
+          <div id="imageHistoryGallery" class="image-history-gallery"></div>
+        </div>
+      </div>
+
+      <div class="editor-empty" id="editorEmpty">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <div class="empty-text">Pick a shot on the left or in the main view to start refining</div>
+        <div class="empty-sub">Live parameter tuning, multi-reference binding, prompt editing and video preview</div>
+      </div>
+
+      <div class="editor-body hidden" id="editorBody">
+        <!-- Editor Header with Actions -->
+        <div class="editor-header">
+          <div class="editor-shot-title">
+            <span class="inspector-heading"><small>Shot settings</small><strong id="editorShotNo">#001</strong></span>
+            <span id="editorStatusBadge" class="badge-status">Pending</span>
+          </div>
+          <div class="editor-top-actions shot-editor-actions">
+            <div class="shot-action-row shot-action-row-main">
+              <button id="saveShotBtn" class="btn btn-secondary">Save</button>
+              
+            </div>
+            <div class="shot-action-row shot-action-row-output">
+              <button id="previewOriginalBtn" class="btn btn-ghost hidden" title="Preview the raw video from the first base-model pass">
+                <span>▶ Original</span>
+              </button>
+              
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode Selector & Context Helper -->
+        <div class="mode-card">
+          <div class="mode-segmented">
+            <button id="modeT2VBtn" class="mode-btn" data-mode="T2V">
+              <span class="mode-tag t2v">T2V</span>
+              <span class="mode-name">Text only / no image needed</span>
+            </button>
+            <button id="modeCutBtn" class="mode-btn active" data-mode="CUT">
+              <span class="mode-tag cut">CUT</span>
+              <span class="mode-name">Standalone shot / camera change</span>
+            </button>
+            <button id="modeContinueBtn" class="mode-btn" data-mode="CONTINUE">
+              <span class="mode-tag continue">CONTINUE</span>
+              <span class="mode-name">Continues the previous shot’s motion</span>
+            </button>
+          </div>
+          <div id="modeTip" class="mode-tip">
+            <strong>CUT mode (Ref2VA)</strong>: for shot-size changes, new scenes and re-locking a role. Ref 1 character image is required; Ref 2~4 are optional.
+          </div>
+        </div>
+
+        <!-- Live Generation Progress -->
+        <div id="generationLive" class="generation-live hidden">
+          <div class="generation-live-head">
+            <span id="generationLiveLabel">Current progress</span>
+            <span id="generationLivePct" class="font-mono">0%</span>
+          </div>
+          <div class="mini-bar-track generation-live-track">
+            <div id="generationLiveBar" class="mini-bar-fill"></div>
+          </div>
+          <div id="generationLiveNode" class="generation-live-node">Waiting to generate</div>
+        </div>
+
+        
+
+        <!-- Video & Output Result Station -->
+        <div id="videoContainer" class="video-card hidden">
+          <div class="video-wrap">
+            <video id="shotVideo" controls controlsList="nodownload" playsinline></video>
+            <button id="shotVideoFloatingDownloadBtn" class="video-floating-download" type="button" title="Download and name automatically by current video type">↓ Download video</button>
+          </div>
+          <div class="video-toolbar">
+            <div class="video-info">
+              <span class="video-status-dot"></span>
+              <span id="videoMetaText">Render complete</span>
+            </div>
+            <div class="video-btns">
+              <button id="downloadVideoBtn" class="btn btn-ghost btn-sm" title="Download local video">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Download</span>
+              </button>
+              <button id="viewLastFrameBtn" class="btn btn-ghost btn-sm" title="View the last frame extracted for this shot">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Last frame</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Card -->
+        <div id="shotError" class="error-banner hidden">
+          <div class="error-head">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>Generation failed</span>
+            <button id="copyErrorBtn" class="btn btn-ghost btn-xs">Copy error</button>
+          </div>
+          <div id="shotErrorMsg" class="error-msg"></div>
+        </div>
+
+        <!-- Basic Parameters -->
+        <div class="editor-section shot-params-section">
+          <div class="section-title">Shot info and parameters</div>
+
+          <div class="form-group">
+            <label class="form-label" for="shotTitle">Shot title</label>
+            <input id="shotTitle" class="form-input" placeholder="e.g. close-up of the heroine by the river, breeze in her hair" />
+          </div>
+
+          <div class="shot-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="shotVideoModel">Video model</label>
+              <select id="shotVideoModel" class="form-select">
+                <option value="b15_49">H3 b15–49 · two-pass sampling</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="shotRatio">Aspect ratio</label>
+              <select id="shotRatio" class="form-select">
+                <option value="9:16">9:16 (vertical / short video)</option>
+                <option value="16:9">16:9 (widescreen)</option>
+                <option value="1:1">1:1 (square)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="shot-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="shotSeconds">Duration (s)</label>
+              <input id="shotSeconds" type="number" step="0.01" min="0.1" max="60" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="shotMP">Resolution (MP)</label>
+              <input id="shotMP" type="number" step="0.05" min="0.1" max="2.0" class="form-input" />
+              <select id="shotPikaResolution" class="form-select" hidden>
+                <option value="0.4">480p</option>
+                <option value="1">768p</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="shot-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="shotExtraLora">Extra LoRA (current Shot)</label>
+              <select id="shotExtraLora" class="form-select">
+                <option value="off">Extra LoRA off (default)</option>
+                <option value="realism">Realism People only · 0.5</option>
+                <option value="naughty">NaughtyTimes only · 0.85</option>
+                <option value="both">Both enabled · 0.5 / 0.85</option>
+              </select>
+            </div>
+            <div class="form-group shot-seed-group">
+              <div class="form-label-row">
+                <label class="form-label" for="shotSeed">Seed</label>
+                <div class="seed-actions">
+                  <button id="seedRandBtn" class="btn btn-ghost btn-xs">🎲 Random</button>
+                  <button id="seed42Btn" class="btn btn-ghost btn-xs">Fixed 42</button>
+                </div>
+              </div>
+              <input id="shotSeed" type="number" min="0" class="form-input font-mono" />
+            </div>
+          </div>
+
+          <div class="form-group hidden" id="shotStepsGroup">
+            <label class="form-label" for="shotSteps">Sampling tier</label>
+            <select id="shotSteps" class="form-select">
+              <option value="10">First pass only: 10 steps (0.4MP quick draft)</option>
+            </select>
+            <div id="lightx2vProfileHint" class="slot-desc" hidden></div>
+          </div>
+
+          <div class="shot-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="shotSecondPass">Sampling stage (first pass / single-video second pass)</label>
+              <select id="shotSecondPass" class="form-select">
+                <option value="0">Step 1 · first pass only (0.4MP / 10 steps)</option>
+                <option value="1">Step 2 · single-video second-pass refine (upscales the first pass)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="shotSecondPassRes">Second-pass pixels (refine resolution · 1K default)</label>
+              <select id="shotSecondPassRes" class="form-select">
+                <option value="1k" selected>1K / 1080p standard HD (2.0x · default)</option>
+                <option value="720p">720p fast HD (1.5x · saves VRAM)</option>
+                <option value="1.5k">1.5K full HD (2.25x · 1920×1088)</option>
+                <option value="2k">2K / 1440p ultra-clear refine (2.5x · 2080×1216)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="shot-grid-2">
+            <div class="form-group">
+              <div class="form-label-row">
+                <label class="form-label" for="videoMVMode">MV project</label>
+                <span id="videoMVModeHint" class="label-hint shot-mv-hint" aria-live="polite">Reading project settings…</span>
+              </div>
+              <select id="videoMVMode" class="form-select" disabled>
+                <option value="0">No · normal video</option>
+                <option value="1">Yes · song-driven singing</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference Images & Frames Studio -->
+        <div class="editor-section" id="shotReferencesSection">
+          <div class="section-title-row">
+            <div class="section-title">Reference workshop (References)</div>
+            <span class="section-sub">Click to upload / drag an image / Ctrl+V to paste</span>
+          </div>
+
+          <div class="ref-slots-grid">
+            <!-- Ref 1 -->
+            <div class="ref-slot-card" data-slot="ref1">
+              <div class="slot-header">
+                <span class="slot-badge required">Ref 1 · Character 1</span>
+              </div>
+              <div class="slot-body">
+                <div class="drop-zone empty-state">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Upload character image</span>
+                  <input type="file" accept="image/*" class="file-input-overlay" />
+                </div>
+                <div class="preview-wrap hidden">
+                  <img class="slot-thumb" />
+                  <div class="slot-hover-actions">
+                    <button class="action-btn zoom" title="Enlarge preview">🔍</button>
+                    <button class="action-btn change" title="Replace image">🔄<input type="file" accept="image/*" class="file-input-overlay" /></button>
+                    <button class="action-btn delete" title="Delete image">🗑️</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ref 2 -->
+            <div class="ref-slot-card" data-slot="ref2">
+              <div class="slot-header">
+                <span class="slot-badge">Ref 2 · Character 2</span>
+              </div>
+              <div class="slot-body">
+                <div class="drop-zone empty-state">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Upload supporting character</span>
+                  <input type="file" accept="image/*" class="file-input-overlay" />
+                </div>
+                <div class="preview-wrap hidden">
+                  <img class="slot-thumb" />
+                  <div class="slot-hover-actions">
+                    <button class="action-btn zoom" title="Enlarge preview">🔍</button>
+                    <button class="action-btn change" title="Replace image">🔄<input type="file" accept="image/*" class="file-input-overlay" /></button>
+                    <button class="action-btn delete" title="Delete image">🗑️</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ref 3 -->
+            <div class="ref-slot-card" data-slot="ref3">
+              <div class="slot-header">
+                <span class="slot-badge">Ref 3 · Scene A</span>
+              </div>
+              <div class="slot-body">
+                <div class="drop-zone empty-state">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Upload scene</span>
+                  <input type="file" accept="image/*" class="file-input-overlay" />
+                </div>
+                <div class="preview-wrap hidden">
+                  <img class="slot-thumb" />
+                  <div class="slot-hover-actions">
+                    <button class="action-btn zoom" title="Enlarge preview">🔍</button>
+                    <button class="action-btn change" title="Replace image">🔄<input type="file" accept="image/*" class="file-input-overlay" /></button>
+                    <button class="action-btn delete" title="Delete image">🗑️</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ref 4 -->
+            <div class="ref-slot-card" data-slot="ref4">
+              <div class="slot-header">
+                <span class="slot-badge">Ref 4 · Scene B</span>
+              </div>
+              <div class="slot-body">
+                <div class="drop-zone empty-state">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Upload scene image B</span>
+                  <input type="file" accept="image/*" class="file-input-overlay" />
+                </div>
+                <div class="preview-wrap hidden">
+                  <img class="slot-thumb" />
+                  <div class="slot-hover-actions">
+                    <button class="action-btn zoom" title="Enlarge preview">🔍</button>
+                    <button class="action-btn change" title="Replace image">🔄<input type="file" accept="image/*" class="file-input-overlay" /></button>
+                    <button class="action-btn delete" title="Delete image">🗑️</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="continuationPanel" class="full-width hidden">
+              <div class="section-title">Continuation frame with fixed character reference</div>
+              <p id="continuationStatus">Automatically continues from the previous shot’s last frame; waits if it is still rendering.</p>
+              <div class="continuation-tools">
+                <button id="extractContinuationFrames" class="btn btn-secondary" type="button">Pick continuation frame manually</button>
+                <button id="restoreAutoContinuation" class="btn btn-secondary" type="button" hidden>Back to auto-continue</button>
+              </div>
+              <p class="slot-desc">No time given: takes the last valid frame plus 3, 6 and 9 frames back (4 total); imajev marks a green recommendation, applied only on click. Reuses the previous shot’s references and fills empty slots only.</p>
+              <div id="continuationProgressBox" hidden style="margin:12px 0"><label id="continuationProgressLabel" for="continuationProgress">Preparing</label><progress id="continuationProgress" max="3" style="display:block;width:100%;height:18px;margin-top:8px;accent-color:#25c987"></progress></div><button id="continuationResponseBtn" class="btn btn-secondary" type="button" hidden>View compact result</button><div id="continuationResponsePanel" hidden><p style="font-size:11px">Image numbering starts at 1; probabilities show model preference.</p><button id="copyContinuationResponse" class="btn btn-secondary" type="button">Copy JSON</button><textarea id="continuationResponseJson" readonly aria-label="Model JSON response" style="display:block;width:100%;height:260px;box-sizing:border-box;font:11px monospace;margin:8px 0"></textarea></div><div id="continuationCandidates" class="continuation-candidates"></div>
+            </div>
+            <!-- First Frame (Full Width) -->
+            <div class="ref-slot-card full-width" data-slot="first_frame">
+              <div class="slot-header">
+                <span class="slot-badge accent" id="firstFrameBadge">First Frame</span>
+                <span class="slot-desc" id="firstFrameDesc">CONTINUE continues from the previous shot’s last frame by default</span>
+              </div>
+              <div class="slot-body horizontal">
+                <div class="drop-zone empty-state">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                    <line x1="7" y1="2" x2="7" y2="22"></line>
+                    <line x1="17" y1="2" x2="17" y2="22"></line>
+                  </svg>
+                  <span id="firstFrameText">Click a custom first frame or drag to replace</span>
+                  <input type="file" accept="image/*" class="file-input-overlay" />
+                </div>
+                <div class="preview-wrap hidden">
+                  <img class="slot-thumb" />
+                  <div class="slot-hover-actions">
+                    <button class="action-btn zoom" title="Enlarge preview">🔍</button>
+                    <button class="action-btn change" title="Replace image">🔄<input type="file" accept="image/*" class="file-input-overlay" /></button>
+                    <button class="action-btn delete" title="Delete image">🗑️</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prompt & Dialogue Studio -->
+        <div class="editor-section prompt-studio-section">
+          <div class="section-title-row prompt-studio-title-row">
+            <div class="section-title">Prompt</div>
+            <button id="generateShotBtn" class="btn btn-primary prompt-studio-generate-btn">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>Generate</span>
+            </button>
+          </div>
+
+          <div class="form-group">
+            <textarea id="shotPrompt" class="form-textarea" rows="8" placeholder="Romantic Japanese anime film style. <Picture 1> stands beside a quiet riverside under cherry blossoms at sunset. Medium close-up shot, gentle spring breeze moving the hair..."></textarea>
+          </div>
+
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Lightbox Modal for HD Image Viewing -->
+  <div id="lightboxModal" class="modal hidden">
+    <div class="lightbox-overlay" id="lightboxOverlay"></div>
+    <div class="lightbox-content">
+      <button id="closeLightboxBtn" class="lightbox-close">✕</button>
+      <img id="lightboxImg" class="lightbox-img" />
+      <div id="lightboxTitle" class="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>System connections and workflow config</span>
+        </div>
+        <button id="closeSettingsBtn" class="icon-btn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Colab ComfyUI URL (Cloudflare Tunnel domain)</label>
+          <input id="comfyUrl" class="form-input" placeholder="https://your-tunnel.example.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Official Pika service URL (separate)</label>
+          <input id="pikaUrl" class="form-input" placeholder="https://your-pika-tunnel-domain" />
+          <div class="slot-desc">Enter the backend URL shown by the Pika startup script. If both services run at once, each needs its own reachable address.</div>
+        </div>
+
+
+
+
+
+        <div class="form-group">
+          <label class="form-label">Base frame rate (FPS)</label>
+          <input id="fps" type="number" class="form-input" />
+        </div>
+
+        <div class="info-callout">
+          <strong>Note:</strong>Set both addresses. Video, image and voice-over use ComfyUI; Pika video models use the Pika service.
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="testConnectionBtn" class="btn btn-ghost">Test connection</button>
+        <button id="saveSettingsBtn" class="btn btn-primary">Save config</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Preview Modal -->
+  <div id="audioPreviewModal" class="modal hidden">
+    <div class="modal-card modal-audio">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>🎵</span>
+          <span id="audioPreviewTitle">Audio preview</span>
+        </div>
+        <button id="closeAudioPreviewBtn" class="icon-btn" title="Close">✕</button>
+      </div>
+      <div class="modal-body audio-preview-body">
+        <div class="audio-preview-stage">
+          <div class="audio-preview-art">♪</div>
+          <div class="audio-preview-copy">
+            <div id="audioPreviewName" class="audio-preview-name">YuE2 song</div>
+            <div id="audioPreviewMeta" class="audio-preview-meta">--</div>
+          </div>
+        </div>
+        <audio id="audioPreviewPlayer" class="audio-preview-player" controls preload="metadata"></audio>
+        <div class="master-video-meta-bar audio-preview-actions">
+          <div class="meta-path-wrap">
+            <span class="meta-label">Currentsong:</span>
+            <span id="audioPreviewPath" class="meta-path font-mono">--</span>
+          </div>
+          <div class="meta-actions">
+            <a id="downloadAudioPreviewBtn" class="btn btn-primary btn-sm" href="#" download>
+              <span>Download audio</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Master Video Cinema Player Modal (成片放映厅) -->
+  <div id="masterVideoModal" class="modal hidden">
+    <div class="modal-card modal-video">
+      <div class="modal-header">
+        <div class="modal-title" id="masterModalTitle">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+          </svg>
+          <span id="masterModalTitleText">Merge and open the screening room</span>
+        </div>
+        <button id="closeMasterModalBtn" class="icon-btn" title="Close">✕</button>
+      </div>
+      <div class="modal-body modal-video-body">
+        <div class="master-video-wrapper">
+          <video id="masterVideoPlayer" controls playsinline></video>
+        </div>
+        <div class="master-video-meta-bar">
+          <div class="meta-path-wrap">
+            <span class="meta-label">File location:</span>
+            <span id="masterModalPath" class="meta-path font-mono">--</span>
+          </div>
+          <div class="meta-actions">
+            <a id="downloadMasterBtn" class="btn btn-primary btn-sm" href="#" download>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download final cut MP4</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prompt/Input Dialog Modal (replaces native window.prompt) -->
+  <div id="inputModal" class="modal hidden">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <div class="modal-title" id="inputModalTitle">New</div>
+        <button id="closeInputModalBtn" class="icon-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" id="inputModalLabel">Name</label>
+          <input id="inputModalVal" class="form-input" autofocus />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelInputModalBtn" class="btn btn-ghost">Cancel</button>
+        <button id="confirmInputModalBtn" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auto Plan Shots Preview Modal -->
+  <div id="shotPlanModal" class="modal hidden">
+    <div class="modal-card modal-shot-plan">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>🎬</span>
+          <span id="shotPlanModalTitle">Auto shots from audio · Preview</span>
+        </div>
+        <button id="closeShotPlanModalBtn" class="icon-btn" title="Close">✕</button>
+      </div>
+      <div class="modal-body shot-plan-modal-body">
+        <div id="shotPlanSummaryBar" class="shot-plan-summary-bar"></div>
+        <div id="shotPlanWarningsBanner" class="shot-plan-warnings-banner hidden"></div>
+        <div class="shot-plan-table-wrap">
+          <table class="shot-table shot-plan-table">
+            <thead>
+              <tr>
+                <th width="64">Shot #</th>
+                <th width="90">Mode</th>
+                <th width="80">Start</th>
+                <th width="80">End</th>
+                <th width="80">Duration</th>
+                <th>Lines</th>
+                <th width="220">Title / warning</th>
+              </tr>
+            </thead>
+            <tbody id="shotPlanRows"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelShotPlanModalBtn" class="btn btn-ghost">Cancel</button>
+        <button id="confirmShotPlanModalBtn" class="btn btn-primary">Confirm shot creation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Dialog Modal (replaces native confirm) -->
+  <div id="confirmModal" class="modal hidden">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <div class="modal-title" id="confirmModalTitle">Confirm</div>
+        <button id="closeConfirmModalBtn" class="icon-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmModalMessage" class="confirm-msg"></p>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelConfirmModalBtn" class="btn btn-ghost">Cancel</button>
+        <button id="okConfirmModalBtn" class="btn btn-danger">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Koubo Packaging Studio Modal (0s Live Preview + Visual Card Editor + Remotion Export) -->
+  <div id="kouboPackModal" class="modal hidden">
+    <div class="modal-card" style="width:min(1480px,96vw);max-width:1480px;height:min(880px,92vh);display:flex;flex-direction:column;background:#111520;border:1px solid #2a344a;border-radius:16px;overflow:hidden">
+      <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid #232c40;background:#151b28">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div class="modal-title" style="font-size:16px;font-weight:700;color:#f8fafc">✨ 16:9 minimal talking-head packaging <span style="font-size:12px;font-weight:500;color:#fbbf24;background:rgba(245,158,11,.15);padding:2px 8px;border-radius:6px;margin-left:6px">huashu-motion minimal spec</span></div>
+          <div style="display:flex;background:#0c1018;padding:3px;border-radius:8px;border:1px solid #263044">
+            <button id="kouboTabLiveBtn" type="button" class="btn btn-xs" style="background:#2563eb;color:#fff;border:none;padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer">⚡ Instant preview</button>
+            <button id="kouboTabVideoBtn" type="button" class="btn btn-xs" style="background:transparent;color:#94a3b8;border:none;padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer">🎬 Play the exported MP4</button>
+          </div>
+        </div>
+        <button id="closeKouboPackModalBtn" class="icon-btn" title="Close">✕</button>
+      </div>
+
+      <div class="modal-body" style="flex:1;display:grid;grid-template-columns:1.45fr 1fr;gap:0;overflow:hidden;padding:0">
+        <!-- Left: 16:9 Live Preview / Rendered MP4 Player -->
+        <div style="display:flex;flex-direction:column;background:#0b0e17;border-right:1px solid #232c40;padding:16px;overflow:hidden">
+          <!-- Mode 1: 0s Live Interactive Stage -->
+          <div id="kouboLivePanel" style="display:flex;flex-direction:column;flex:1;min-height:0">
+            <div id="kouboLiveStageOuter" style="flex:1;min-height:0;position:relative;overflow:hidden">
+              <div id="kouboLiveStage" style="width:1920px;height:1080px;flex-shrink:0;background:#EDF0EA;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(0.42);transform-origin:center center;overflow:hidden;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.55);user-select:none">
+                <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(30,29,26,.07) 1.2px, transparent 1.4px);background-size:30px 30px;pointer-events:none"></div>
+                <div id="kouboStageTopBar" style="position:absolute;left:70px;right:52px;top:40px;display:flex;align-items:center;justify-content:space-between;z-index:25"></div>
+                <div id="kouboStageSlide" style="position:absolute;inset:0;z-index:10"></div>
+                <div id="kouboStageHost" style="position:absolute;left:130px;top:185px;width:480px;height:685px;border-radius:30px;overflow:hidden;background:#111;box-shadow:0 0 0 6px #fff, 0 24px 60px rgba(40,40,30,.25);z-index:20;transition:left .32s cubic-bezier(.2,.9,.3,1),top .32s cubic-bezier(.2,.9,.3,1),width .32s cubic-bezier(.2,.9,.3,1),height .32s cubic-bezier(.2,.9,.3,1)">
+                  <video id="kouboStageHostVideo" playsinline style="position:absolute;left:-7%;top:-2%;width:114%;height:auto"></video>
+                  <div id="kouboStageHostLabel" style="position:absolute;left:16px;top:16px;font-weight:600;font-size:16px;color:rgba(255,255,255,.92);background:rgba(0,0,0,.45);padding:5px 14px;border-radius:8px">nana · compute watch</div>
+                </div>
+                <div id="kouboStageSubsWrap" style="position:absolute;left:0;width:1920px;bottom:38px;display:flex;justify-content:center;z-index:30;pointer-events:none">
+                  <div id="kouboStageSubs" style="font-weight:600;font-size:36px;color:#fff;background:rgba(28,27,24,.88);padding:8px 28px;border-radius:14px;max-width:1280px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.18)"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Player Controls & Slide Jump Bar -->
+            <div style="margin-top:12px;background:#151b28;border:1px solid #263044;border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <button id="kouboPlayToggleBtn" type="button" class="btn btn-primary btn-xs" style="min-width:68px">▶ Play</button>
+                <input id="kouboTimelineScrub" type="range" min="0" max="80" step="0.04" value="0" style="flex:1;accent-color:#f59e0b;cursor:pointer" />
+                <span id="kouboTimeReadout" class="font-mono" style="font-size:12px;color:#cbd5e1;min-width:96px;text-align:right">00.0s / 79.9s</span>
+              </div>
+              <div id="kouboSlideTabs" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+            </div>
+          </div>
+
+          <!-- Mode 2: Rendered MP4 Video Player -->
+          <div id="kouboVideoPanel" class="hidden" style="display:flex;flex-direction:column;flex:1;min-height:0;align-items:center;justify-content:center;gap:12px">
+            <video id="kouboRenderedVideo" controls playsinline style="width:100%;max-height:calc(100% - 40px);border-radius:12px;background:#000;box-shadow:0 16px 40px rgba(0,0,0,.5)"></video>
+            <div id="kouboVideoStatusHint" style="font-size:12px;color:#94a3b8">Playing the full 16:9 export from Remotion (includes a 3:4 cover from frame 0 + BGM + SFX)</div>
+          </div>
+        </div>
+
+        <!-- Right: Visual Card Editor -->
+        <div style="display:flex;flex-direction:column;background:#141a26;overflow-y:auto;padding:16px 18px;gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:14px;font-weight:700;color:#f1f5f9">📝 Visual editing of the current beat cards (edits refresh the left image instantly)</div>
+            <span id="kouboActiveSlideBadge" style="font-size:12px;color:#38bdf8;background:rgba(56,189,248,.12);padding:2px 10px;border-radius:999px">Act 1</span>
+          </div>
+          <div id="kouboEditorForm" style="display:flex;flex-direction:column;gap:10px"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid #232c40;background:#151b28">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;margin-right:20px">
+          <div id="kouboRenderProgressBox" style="display:flex;align-items:center;gap:10px;flex:1;max-width:460px">
+            <div style="flex:1;height:8px;background:#242f46;border-radius:999px;overflow:hidden">
+              <div id="kouboRenderBar" style="width:0%;height:100%;background:linear-gradient(90deg,#f59e0b,#10b981);transition:width .25s"></div>
+            </div>
+            <span id="kouboRenderStatusText" style="font-size:12px;color:#cbd5e1;white-space:nowrap">Ready</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button id="kouboSaveConfigBtn" type="button" class="btn btn-secondary btn-sm">💾 Save config</button>
+          <button id="kouboRenderMp4Btn" type="button" class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#f59e0b,#ea580c);border-color:#f59e0b;color:#fff">🚀 Render / update MP4</button>
+          <a id="kouboDownloadMp4Btn" href="#" download class="btn btn-secondary btn-sm" style="text-decoration:none;border-color:#10b981;color:#34d399">⬇ Download 16:9 packaged cut</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="/static/vendor/vue.global.prod.js"></script>
+  <script src="/static/image-workbench.js?v=20261101-openh3-1080p-v72"></script>
+  <script src="/static/video-models.js?v=20261101-openh3-1080p-v72"></script>
+  <script src="/static/shot-drafts.js?v=20261101-openh3-1080p-v72"></script>
+  <script src="/static/app.js?v=20261101-openh3-1080p-v72"></script>
+</body>
+</html>

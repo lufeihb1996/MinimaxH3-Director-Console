@@ -1,0 +1,109 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_turbo_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {"title": "Krea 2 Turbo INT8 ConvRot"}
+  },
+  "2": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["1", 0],
+      "lora_name": "krea2_turbo_4step_rank_64_lora_comfyui.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {"title": "Krea 2 Turbo 4-Step Distill LoRA"}
+  },
+  "11": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["2", 0],
+      "lora_name": "Famegrid-Natural-V1-Krea-2.safetensors",
+      "strength_model": 0.45
+    },
+    "_meta": {"title": "FameGrid Natural V1 / 0.45"}
+  },
+  "12": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["11", 0],
+      "lora_name": "PornMaster_Uncensored_Krea2_V1.safetensors",
+      "strength_model": 0.7
+    },
+    "_meta": {"title": "PornMaster Uncensored Krea2 V1 / 0.70"}
+  },
+  "3": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_fp8_scaled.safetensors",
+      "type": "krea2",
+      "device": "default"
+    },
+    "_meta": {"title": "Qwen3-VL 4B for Krea 2"}
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["3", 0],
+      "text": "__PROMPT__"
+    },
+    "_meta": {"title": "Scene Image Prompt"}
+  },
+  "5": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": {
+      "conditioning": ["4", 0]
+    },
+    "_meta": {"title": "Turbo Zero Negative"}
+  },
+  "6": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 768,
+      "height": 1360,
+      "batch_size": 1
+    },
+    "_meta": {"title": "Krea Output Size"}
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["12", 0],
+      "positive": ["4", 0],
+      "negative": ["5", 0],
+      "latent_image": ["6", 0],
+      "seed": 42,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": {"title": "Krea 2 Turbo 4-Step / CFG 1 / Euler Simple"}
+  },
+  "8": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "_meta": {"title": "Qwen Image VAE"}
+  },
+  "9": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["7", 0],
+      "vae": ["8", 0]
+    },
+    "_meta": {"title": "Krea VAE Decode"}
+  },
+  "10": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["9", 0],
+      "filename_prefix": "anime_studio/images/krea_scene"
+    },
+    "_meta": {"title": "Save Krea Scene Image"}
+  }
+}
