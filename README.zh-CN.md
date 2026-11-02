@@ -1,6 +1,10 @@
 # AI Anime Studio
 
 <p align="center">
+  <img src="assets/demo/social-preview.jpg" alt="AI Anime Studio — AI 短片制作台" width="100%">
+</p>
+
+<p align="center">
   <img alt="Python" src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white">
   <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-0.115%2B-009688?logo=fastapi&logoColor=white">
   <img alt="Platform" src="https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white">
