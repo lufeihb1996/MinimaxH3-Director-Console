@@ -27,7 +27,10 @@ lifting on a remote ComfyUI.
 [English](README.md) | [简体中文](README.zh-CN.md)
 
 <p align="center">
-  <img src="assets/demo/mythic-clash.gif" alt="Mythic clash, generated with H3 b15-49" width="820">
+  <img src="assets/demo/ui-image-workbench.jpg" alt="Image workbench: four reference slots, queue, history" width="49%">
+  <img src="assets/demo/mythic-clash.gif" alt="Mythic clash, generated with H3 b15-49" width="49%">
+  <br>
+  <sub><b>Left:</b> the image workbench — four fixed reference slots per scene, each with history and “set as current”. <b>Right:</b> a shot rendered from this console (H3 b15-49, T2V, 5 s, 1728×960).</sub>
 </p>
 
 ## What you can make
@@ -38,6 +41,17 @@ lifting on a remote ComfyUI.
 | 🎙️ | **Talking-head / interview** | Clone a voice with Fish Audio Drama 3, align lines with Qwen3-ASR, auto-plan shots from the audio timeline, then lay it out in the 16:9 packaging workbench (Remotion cards) |
 | 🎬 | **Story / action short** | Lock characters and locations with four reference slots, keep motion continuous with CONTINUE shots, refine every take to 1080p or 2K |
 | 🖼️ | **Reference-image studio** | Generate photoreal or anime characters and empty sets with MOSS-Image 5B or Krea 2, keep a history per slot, share one character across every scene |
+
+## The four workbenches
+
+Everything happens on one project; the top bar switches between four workbenches.
+
+| Workbench | What you do there |
+|---|---|
+| 🎬 **Video director** | Shot list with live progress and elapsed time, per-shot parameters (mode, model, aspect, MP, steps, seed, second pass), preview, terminal log, batch render, play scene, merge project |
+| 🖼 **Image workbench** | A queue of exactly four reference slots per scene — Ref1/Ref2 characters, Ref3/Ref4 sets/scenes — generate, upload, paste, browse history, pick “set as current” |
+| 🎵 **Audio workbench** | YuE2 song generation or your own audio, then analysis: vocal split, lyric timeline, beats, SRT |
+| 🎙️ **Voice-over workbench** | Voice library, multi-speaker tasks with `<|speaker:N|>` tags, Drama 3 generation, apply as project audio |
 
 ## Models it drives
 
@@ -97,14 +111,24 @@ More reference images: [character A](assets/demo/gallery/interview-subject-a.jpg
 [character B](assets/demo/gallery/interview-subject-b.jpg) ·
 [empty set](assets/demo/gallery/studio-empty-set.jpg)
 
-## The console
+## Inside the console
 
 <p align="center">
-  <img src="assets/demo/ui-video-director.jpg" alt="Video director: shot list, live progress, reference slots" width="880">
+  <img src="assets/demo/ui-video-director.jpg" alt="Video director: shot list, live progress, reference slots" width="920">
 </p>
 
-Left: projects → scenes → shots. Center: the selected shot, its preview, live progress and terminal
-log. Right: shot parameters and the four reference slots.
+Left: projects → scenes → shots. Middle: the selected shot, its preview, live progress, elapsed time
+and the remote terminal log. Right: shot parameters — mode (T2V / CUT / CONTINUE), model, aspect,
+megapixels, steps, seed, extra LoRA, second pass.
+
+<p align="center">
+  <img src="assets/demo/ui-image-workbench.jpg" alt="Image workbench: image queue and four reference slots" width="920">
+</p>
+
+The image workbench keeps one queue row per reference slot (R1–R4), shows the same four slots on the
+right, and tracks every generated image with its seed and resolution.
+
+*Screenshots come from a production build running the Chinese UI; this repository ships the English UI.*
 
 ## Quick start
 
